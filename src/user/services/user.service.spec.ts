@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 import { ROLE } from '../../auth/constants/role.constant';
 import { AppLogger } from '../../shared/logger/logger.service';
@@ -10,7 +10,7 @@ import { User } from '../entities/user.entity';
 import { UserRepository } from '../repositories/user.repository';
 import { UserService } from './user.service';
 
-jest.mock('bcrypt');
+jest.mock('bcryptjs');
 
 describe('UserService', () => {
   let service: UserService;

@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 
 import { AppModule } from '../../src/app.module';
-import { ArticleOutput } from '../../src/article/dtos/article-output.dto';
+import { ArticleOutput } from '../../src/article/application/dto/article-output.dto';
 import { AuthTokenOutput } from '../../src/auth/dtos/auth-token-output.dto';
 import { UserOutput } from '../../src/user/dtos/user-output.dto';
 import {

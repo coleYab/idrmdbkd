@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { Article } from '../../article/entities/article.entity';
+import { Article } from '../../article/domain/entities/article.entity';
 import { ROLE } from './../../auth/constants/role.constant';
 import { BaseAclService } from './acl.service';
 import { RuleCallback } from './acl-rule.constant';

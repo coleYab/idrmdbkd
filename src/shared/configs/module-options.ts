@@ -11,11 +11,28 @@ export const configModuleOptions: ConfigModuleOptions = {
       .valid('development', 'production', 'test')
       .default('development'),
     APP_PORT: Joi.number().required(),
-    DB_HOST: Joi.string().required(),
+    DATABASE_URL: Joi.string().optional(),
+    DB_HOST: Joi.when('DATABASE_URL', {
+      is: Joi.exist(),
+      then: Joi.optional(),
+      otherwise: Joi.required(),
+    }),
     DB_PORT: Joi.number().optional(),
-    DB_NAME: Joi.string().required(),
-    DB_USER: Joi.string().required(),
-    DB_PASS: Joi.string().required(),
+    DB_NAME: Joi.when('DATABASE_URL', {
+      is: Joi.exist(),
+      then: Joi.optional(),
+      otherwise: Joi.required(),
+    }),
+    DB_USER: Joi.when('DATABASE_URL', {
+      is: Joi.exist(),
+      then: Joi.optional(),
+      otherwise: Joi.required(),
+    }),
+    DB_PASS: Joi.when('DATABASE_URL', {
+      is: Joi.exist(),
+      then: Joi.optional(),
+      otherwise: Joi.required(),
+    }),
     JWT_PUBLIC_KEY_BASE64: Joi.string().required(),
     JWT_PRIVATE_KEY_BASE64: Joi.string().required(),
     JWT_ACCESS_TOKEN_EXP_IN_SEC: Joi.number().required(),

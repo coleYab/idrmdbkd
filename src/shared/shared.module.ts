@@ -14,20 +14,53 @@ import { AppLoggerModule } from './logger/logger.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('database.host'),
-        port: configService.get<number | undefined>('database.port'),
-        database: configService.get<string>('database.name'),
-        username: configService.get<string>('database.user'),
-        password: configService.get<string>('database.pass'),
-        entities: [__dirname + '/../**/entities/*.entity{.ts,.js}'],
-        // Timezone configured on the Postgres server.
-        // This is used to typecast server date/time values to JavaScript Date object and vice versa.
-        timezone: 'Z',
-        synchronize: false,
-        debug: configService.get<string>('env') === 'development',
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const databaseUrl = configService.get<string | undefined>(
+          'database.url',
+        );
+        const databaseHost = configService.get<string | undefined>(
+          'database.host',
+        );
+        const shouldUseSsl =
+          Boolean(databaseUrl) || Boolean(databaseHost?.includes('neon.tech'));
+
+        const commonOptions = {
+          type: 'postgres' as const,
+          entities: [__dirname + '/../**/entities/*.entity{.ts,.js}'],
+          autoLoadEntities: true,
+          // Timezone configured on the Postgres server.
+          // This is used to typecast server date/time values to JavaScript Date object and vice versa.
+          timezone: 'Z',
+          synchronize: true,
+          debug: configService.get<string>('env') === 'development',
+        };
+
+        if (databaseUrl) {
+          return {
+            ...commonOptions,
+            url: databaseUrl,
+            ssl: shouldUseSsl
+              ? {
+                  rejectUnauthorized: false,
+                }
+              : undefined,
+          };
+        }
+
+        return {
+          ...commonOptions,
+          host: configService.get<string>('database.host'),
+          port: configService.get<number | undefined>('database.port'),
+          database: configService.get<string>('database.name'),
+          username: configService.get<string>('database.user'),
+          password: configService.get<string>('database.pass'),
+          ssl: shouldUseSsl
+            ? {
+                rejectUnauthorized: false,
+              }
+            : undefined,
+        };
+      },
     }),
     AppLoggerModule,
   ],
