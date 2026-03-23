@@ -12,7 +12,14 @@ import {
   Put,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   BaseApiErrorResponse,
@@ -23,7 +30,10 @@ import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
 import { ReportIncidentDto } from '../../../application/dto/create-incident.dto';
-import { UpdateIncidentDto } from '../../../application/dto/update-incident.dto';
+import {
+  UpdateIncidentDto,
+  UpdateIncidentStatus,
+} from '../../../application/dto/update-incident.dto';
 import { IncidentService } from '../../../application/services/incident.service';
 import { CreateIncidentUseCase } from '../../../application/use-cases/create-module/create-incident.use-case';
 import { UpdateIncidentUseCase } from '../../../application/use-cases/update/update-incident.use-case';
@@ -54,13 +64,17 @@ export class IncidentController {
     status: HttpStatus.BAD_REQUEST,
     type: BaseApiErrorResponse,
   })
+  @ApiBody({ type: ReportIncidentDto })
   async create(
     @ReqContext() ctx: RequestContext,
     @Body() dto: ReportIncidentDto,
   ): Promise<BaseApiResponse<Incident>> {
     this.logger.log(ctx, `${this.create.name} was called`);
 
-    const incident = await this.createIncidentUseCase.execute(dto);
+    const incident = await this.createIncidentUseCase.execute(
+      ctx.user?.id.toString() || uuidv4(), // Use user ID from context if available, otherwise generate a new UUID
+      dto,
+    );
     return { data: incident, meta: {} };
   }
 
@@ -76,6 +90,11 @@ export class IncidentController {
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     type: BaseApiErrorResponse,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Incident ID',
+    type: String,
   })
   async findOne(
     @ReqContext() ctx: RequestContext,
@@ -118,6 +137,20 @@ export class IncidentController {
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse(Incident),
   })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Incident ID',
+    type: String,
+  })
+  @ApiBody({ type: UpdateIncidentDto })
   async update(
     @ReqContext() ctx: RequestContext,
     @Param('id') id: string,
@@ -137,12 +170,54 @@ export class IncidentController {
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
   })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Incident ID',
+    type: String,
+  })
   async delete(
     @ReqContext() ctx: RequestContext,
     @Param('id') id: string,
   ): Promise<void> {
     this.logger.log(ctx, `${this.delete.name} was called`);
-
     await this.incidentService.delete(id);
+  }
+
+  @Put(':id/resolve')
+  @ApiOperation({
+    summary: 'Resolve incident API',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: Incident,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Incident ID',
+    type: String,
+  })
+  @ApiBody({ type: UpdateIncidentStatus })
+  async resolve(
+    @ReqContext() ctx: RequestContext,
+    @Param('id') id: string,
+    @Body() dto: UpdateIncidentStatus,
+  ): Promise<Incident> {
+    return this.incidentService.resolve(
+      id,
+      ctx.user?.id.toString() || uuidv4(),
+      dto.status,
+    );
   }
 }

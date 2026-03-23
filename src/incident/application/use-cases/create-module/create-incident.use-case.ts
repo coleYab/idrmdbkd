@@ -16,7 +16,7 @@ export class CreateIncidentUseCase {
     private readonly incidentRepository: IncidentRepository,
   ) {}
 
-  async execute(dto: ReportIncidentDto): Promise<Incident> {
+  async execute(userId: string, dto: ReportIncidentDto): Promise<Incident> {
     const incident = Incident.create(
       uuidv4(),
       dto.title,
@@ -29,6 +29,7 @@ export class CreateIncidentUseCase {
       dto.affectedPopulationCount,
       dto.requiresUrgentMedical,
       dto.infrastructureDamage,
+      userId,
       new Date(),
       new Date(),
     );

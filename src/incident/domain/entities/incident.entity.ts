@@ -24,6 +24,8 @@ export class Incident extends AggregateRoot {
   private requiresUrgentMedical: boolean;
   private infrastructureDamage: string[];
 
+  private reportedBy: string;
+
   private createdAt: Date;
   private updatedAt: Date;
 
@@ -42,6 +44,7 @@ export class Incident extends AggregateRoot {
     affectedPopulationCount: number,
     requiresUrgentMedical: boolean,
     infrastructureDamage: string[],
+    reportedBy: string,
     createdAt: Date,
     updatedAt: Date,
     resolvedBy?: string,
@@ -63,6 +66,7 @@ export class Incident extends AggregateRoot {
     this.resolvedAt = resolvedAt;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+    this.reportedBy = reportedBy;
   }
 
   public getIncidentType(): IncidentType {
@@ -71,6 +75,38 @@ export class Incident extends AggregateRoot {
 
   public getStatus(): IncidentStatus {
     return this.status;
+  }
+
+  public getReportedBy(): string {
+    return this.reportedBy;
+  }
+
+  public updateStatus(status: IncidentStatus): void {
+    this.status = status;
+    this.updatedAt = new Date();
+    this.apply(new IncidentUpdatedEvent(this));
+  }
+
+  public reject(rejectedBy: string): void {
+    if (this.status !== IncidentStatus.ACTIVE) {
+      throw new Error('Only active incidents can be rejected');
+    }
+
+    this.resolvedBy = rejectedBy;
+    this.resolvedAt = new Date();
+    this.updatedAt = new Date();
+    this.updateStatus(IncidentStatus.REJECTED);
+  }
+
+  public approve(resolvedBy: string): void {
+    if (this.status !== IncidentStatus.ACTIVE) {
+      throw new Error('Only active incidents can be approved');
+    }
+
+    this.resolvedBy = resolvedBy;
+    this.resolvedAt = new Date();
+    this.updatedAt = new Date();
+    this.updateStatus(IncidentStatus.VERIFIED);
   }
 
   public getSeverity(): IncidentSeverityLevel {
@@ -136,6 +172,7 @@ export class Incident extends AggregateRoot {
     affectedPopulationCount: number,
     requiresUrgentMedical: boolean,
     infrastructureDamage: string[],
+    reportedBy: string,
     resolvedBy?: string,
     resolvedAt?: Date,
   ): void {
@@ -150,6 +187,7 @@ export class Incident extends AggregateRoot {
     this.requiresUrgentMedical = requiresUrgentMedical;
     this.infrastructureDamage = infrastructureDamage;
     this.updatedAt = new Date();
+    this.reportedBy = reportedBy;
     this.resolvedBy = resolvedBy;
     this.resolvedAt = resolvedAt;
     this.apply(new IncidentUpdatedEvent(this));
@@ -167,6 +205,7 @@ export class Incident extends AggregateRoot {
     affectedPopulationCount: number,
     requiresUrgentMedical: boolean,
     infrastructureDamage: string[],
+    reportedBy: string,
     createdAt: Date,
     updatedAt: Date,
     resolvedBy?: string,
@@ -184,6 +223,7 @@ export class Incident extends AggregateRoot {
       affectedPopulationCount,
       requiresUrgentMedical,
       infrastructureDamage,
+      reportedBy,
       createdAt,
       updatedAt,
       resolvedBy,

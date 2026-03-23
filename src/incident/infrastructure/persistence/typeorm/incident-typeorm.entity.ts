@@ -49,6 +49,9 @@ export class IncidentTypeOrmEntity {
   @Column('json')
   attachments: string[];
 
+  @Column({ length: 100, default: 'anonymous' })
+  reportedBy: string;
+
   @Column({ type: 'int' })
   affectedPopulationCount: number;
 

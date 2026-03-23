@@ -29,6 +29,7 @@ export class IncidentTypeOrmRepository implements IncidentRepository {
       entity.affectedPopulationCount,
       entity.requiresUrgentMedical,
       entity.infrastructureDamage,
+      entity.reportedBy,
       entity.createdAt,
       entity.updatedAt,
       entity.resolvedBy,
@@ -53,6 +54,7 @@ export class IncidentTypeOrmRepository implements IncidentRepository {
           entity.affectedPopulationCount,
           entity.requiresUrgentMedical,
           entity.infrastructureDamage,
+          entity.reportedBy,
           entity.createdAt,
           entity.updatedAt,
           entity.resolvedBy,
@@ -74,6 +76,7 @@ export class IncidentTypeOrmRepository implements IncidentRepository {
     entity.affectedPopulationCount = incident.getAffectedPopulationCount();
     entity.requiresUrgentMedical = incident.getIsUrgentMedicalRequired();
     entity.infrastructureDamage = incident.getInfrastructureDamage();
+    entity.reportedBy = incident.getReportedBy();
     entity.createdAt = incident.getCreatedAt();
     entity.updatedAt = incident.getUpdatedAt();
 
@@ -92,6 +95,7 @@ export class IncidentTypeOrmRepository implements IncidentRepository {
     entity.status = incident.getStatus();
     entity.severity = incident.getSeverity();
     entity.location = incident.getLocation();
+    entity.reportedBy = incident.getReportedBy();
     entity.attachments = incident.getAttachments();
     entity.affectedPopulationCount = incident.getAffectedPopulationCount();
     entity.requiresUrgentMedical = incident.getIsUrgentMedicalRequired();
