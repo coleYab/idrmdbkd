@@ -21,10 +21,23 @@ export class DisasterTypeOrmRepository implements DisasterRepository {
       entity.id,
       entity.title,
       entity.description,
+      entity.type,
+      entity.status,
+      entity.severity,
+      entity.location,
+      entity.totalAffectedPopulation,
+      entity.requiresUrgentMedical,
+      entity.infrastructureDamage,
+      entity.attachments,
+      entity.estimatedEconomicLoss,
+      entity.budgetAllocated,
+      entity.declaredBy,
+      entity.linkedIncidentIds,
       entity.createdAt,
       entity.updatedAt,
+      entity.activatedAt,
+      entity.closedAt,
     );
-    // return new Disaster(entity.id, entity.name, entity.description);
   }
 
   async findAll(): Promise<Disaster[]> {
@@ -35,33 +48,75 @@ export class DisasterTypeOrmRepository implements DisasterRepository {
           entity.id,
           entity.title,
           entity.description,
+          entity.type,
+          entity.status,
+          entity.severity,
+          entity.location,
+          entity.totalAffectedPopulation,
+          entity.requiresUrgentMedical,
+          entity.infrastructureDamage,
+          entity.attachments,
+          entity.estimatedEconomicLoss,
+          entity.budgetAllocated,
+          entity.declaredBy,
+          entity.linkedIncidentIds,
           entity.createdAt,
           entity.updatedAt,
+          entity.activatedAt,
+          entity.closedAt,
         ),
     );
   }
 
-  async save(incident: Disaster): Promise<void> {
+  async save(disaster: Disaster): Promise<void> {
     const entity = new DisasterTypeOrmEntity();
-    entity.id = incident.getId();
-    entity.title = incident.getTitle();
-    entity.description = incident.getDescription();
-    entity.createdAt = incident.getCreatedAt();
-    entity.updatedAt = incident.getUpdatedAt();
+    entity.id = disaster.getId();
+    entity.title = disaster.getTitle();
+    entity.description = disaster.getDescription();
+    entity.type = disaster.getType();
+    entity.status = disaster.getStatus();
+    entity.severity = disaster.getSeverity();
+    entity.location = disaster.getLocation();
+    entity.totalAffectedPopulation = disaster.getTotalAffectedPopulation();
+    entity.requiresUrgentMedical = disaster.getRequiresUrgentMedical();
+    entity.infrastructureDamage = disaster.getInfrastructureDamage();
+    entity.attachments = disaster.getAttachments();
+    entity.estimatedEconomicLoss = disaster.getEstimatedEconomicLoss();
+    entity.budgetAllocated = disaster.getBudgetAllocated();
+    entity.declaredBy = disaster.getDeclaredBy();
+    entity.linkedIncidentIds = disaster.getLinkedIncidentIds();
+    entity.createdAt = disaster.getCreatedAt();
+    entity.updatedAt = disaster.getUpdatedAt();
+    entity.activatedAt = disaster.getActivatedAt();
+    entity.closedAt = disaster.getClosedAt();
 
     await this.repository.save(entity);
   }
 
-  async update(incident: Disaster): Promise<void> {
+  async update(disaster: Disaster): Promise<void> {
     const entity = await this.repository.findOne({
-      where: { id: incident.getId() },
+      where: { id: disaster.getId() },
     });
     if (!entity) throw new Error('Disaster not found');
-
-    entity.title = incident.getTitle();
-    entity.description = incident.getDescription();
-    entity.createdAt = incident.getCreatedAt();
-    entity.updatedAt = incident.getUpdatedAt();
+    entity.id = disaster.getId();
+    entity.title = disaster.getTitle();
+    entity.description = disaster.getDescription();
+    entity.type = disaster.getType();
+    entity.status = disaster.getStatus();
+    entity.severity = disaster.getSeverity();
+    entity.location = disaster.getLocation();
+    entity.totalAffectedPopulation = disaster.getTotalAffectedPopulation();
+    entity.requiresUrgentMedical = disaster.getRequiresUrgentMedical();
+    entity.infrastructureDamage = disaster.getInfrastructureDamage();
+    entity.attachments = disaster.getAttachments();
+    entity.estimatedEconomicLoss = disaster.getEstimatedEconomicLoss();
+    entity.budgetAllocated = disaster.getBudgetAllocated();
+    entity.declaredBy = disaster.getDeclaredBy();
+    entity.linkedIncidentIds = disaster.getLinkedIncidentIds();
+    entity.createdAt = disaster.getCreatedAt();
+    entity.updatedAt = disaster.getUpdatedAt();
+    entity.activatedAt = disaster.getActivatedAt();
+    entity.closedAt = disaster.getClosedAt();
 
     await this.repository.save(entity);
   }

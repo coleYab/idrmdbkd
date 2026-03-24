@@ -27,6 +27,7 @@ import { CreateDisasterDto } from '../../../application/dto/create-disaster.dto'
 import { UpdateDisasterDto } from '../../../application/dto/update-disaster.dto';
 import { DisasterService } from '../../../application/services/disaster.service';
 import { CreateDisasterUseCase } from '../../../application/use-cases/create/create-disaster.use-case';
+import { CreateDisasterFromIncidentUseCase } from '../../../application/use-cases/create/create-disaster-from-incident.use-case';
 import { UpdateDisasterUseCase } from '../../../application/use-cases/update/update-disaster.use-case';
 import { Disaster } from '../../../domain/entities/disaster.entity';
 
@@ -34,8 +35,9 @@ import { Disaster } from '../../../domain/entities/disaster.entity';
 @Controller('disasters')
 export class DisasterController {
   constructor(
-    private readonly createIncidentUseCase: CreateDisasterUseCase,
-    private readonly updateIncidentUseCase: UpdateDisasterUseCase,
+    private readonly createDisasterUseCase: CreateDisasterUseCase,
+    private readonly createDisasterFromIncidentUseCase: CreateDisasterFromIncidentUseCase,
+    private readonly updateDisasterUseCase: UpdateDisasterUseCase,
     private readonly disasterService: DisasterService,
     private readonly logger: AppLogger,
   ) {
@@ -61,7 +63,7 @@ export class DisasterController {
   ): Promise<BaseApiResponse<Disaster>> {
     this.logger.log(ctx, `${this.create.name} was called`);
 
-    const disaster = await this.createIncidentUseCase.execute(
+    const disaster = await this.createDisasterUseCase.execute(
       ctx.user?.id.toString() || uuidv4(), // Use user ID from context if available, otherwise generate a new UUID
       dto,
     );
@@ -129,8 +131,22 @@ export class DisasterController {
   ): Promise<BaseApiResponse<Disaster>> {
     this.logger.log(ctx, `${this.update.name} was called`);
 
-    const disaster = await this.updateIncidentUseCase.execute(id, dto);
+    const disaster = await this.updateDisasterUseCase.execute(id, dto);
     return { data: disaster, meta: {} };
+  }
+
+  @Post('from/:id')
+  async createFromIncident(
+    @Param('id') id: string,
+    @Body() dto: CreateDisasterDto,
+    @ReqContext() ctx: RequestContext,
+  ): Promise<Disaster> {
+    const userId = ctx.user?.id.toString() || uuidv4();
+    return await this.createDisasterFromIncidentUseCase.execute(
+      userId,
+      dto,
+      id,
+    );
   }
 
   @Delete(':id')

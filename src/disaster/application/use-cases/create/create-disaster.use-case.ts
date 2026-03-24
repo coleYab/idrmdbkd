@@ -12,7 +12,7 @@ import { CreateDisasterDto } from '../../dto/create-disaster.dto';
 export class CreateDisasterUseCase {
   constructor(
     @Inject(DISASTER_REPOSITORY)
-    private readonly incidentRepository: DisasterRepository,
+    private readonly disasterRepository: DisasterRepository,
   ) {}
 
   async execute(userId: string, dto: CreateDisasterDto): Promise<Disaster> {
@@ -20,12 +20,23 @@ export class CreateDisasterUseCase {
       uuidv4(),
       dto.title,
       dto.description,
+      dto.type,
+      dto.status,
+      dto.severity,
+      dto.location,
+      dto.totalAffectedPopulation,
+      dto.requiresUrgentMedical || false,
+      dto.infrastructureDamage || [],
+      dto.attachments || [],
+      dto.estimatedEconomicLoss || 0,
+      dto.budgetAllocated || 0,
+      userId,
+      dto.linkedIncidentIds || [],
       new Date(),
       new Date(),
     );
 
-    console.log(disaster);
-    await this.incidentRepository.save(disaster);
+    await this.disasterRepository.save(disaster);
     return disaster;
   }
 }
