@@ -1,6 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
+import {
+  INCIDENT_REPOSITORY,
+  IncidentRepository,
+} from '../../../../incident/domain/repositories/incident.repository';
 import { Disaster } from '../../../domain/entities/disaster.entity';
 import {
   DISASTER_REPOSITORY,
@@ -13,9 +17,18 @@ export class CreateDisasterUseCase {
   constructor(
     @Inject(DISASTER_REPOSITORY)
     private readonly disasterRepository: DisasterRepository,
+    @Inject(INCIDENT_REPOSITORY)
+    private readonly incidentRepository: IncidentRepository,
   ) {}
 
   async execute(userId: string, dto: CreateDisasterDto): Promise<Disaster> {
+    for (const incidentId of dto.linkedIncidentIds || []) {
+      const incident = this.incidentRepository.findById(incidentId);
+      if (!incident) {
+        throw new Error(`Incident ${incidentId} not found!`);
+      }
+    }
+
     const disaster = Disaster.create(
       uuidv4(),
       dto.title,
