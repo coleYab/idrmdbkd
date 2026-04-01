@@ -138,15 +138,11 @@ export class DisasterController {
   @Post('from/:id')
   async createFromIncident(
     @Param('id') id: string,
-    @Body() dto: CreateDisasterDto,
+    // @Body() dto: CreateDisasterDto,
     @ReqContext() ctx: RequestContext,
   ): Promise<Disaster> {
     const userId = ctx.user?.id.toString() || uuidv4();
-    return await this.createDisasterFromIncidentUseCase.execute(
-      userId,
-      dto,
-      id,
-    );
+    return await this.createDisasterFromIncidentUseCase.execute(userId, id);
   }
 
   @Delete(':id')
