@@ -73,7 +73,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@compodoc/compodoc": "^1.1.32",
+    "@compodoc/compodoc": "^1.2.1",
     "@nestjs/cli": "^10.4.9",
     "@nestjs/schematics": "^10.2.3",
     "@nestjs/testing": "^10.4.20",
