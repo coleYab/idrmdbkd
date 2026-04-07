@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { CommentTypeOrmEntity } from '../../../../comment/infrastructure/persistence/typeorm/comment-typeorm.entity';
 
 import {
   DisasterSeverityLevel,
@@ -79,4 +82,7 @@ export class DisasterTypeOrmEntity {
 
   @Column({ type: 'timestamp', nullable: true })
   closedAt?: Date;
+
+  @OneToMany(() => CommentTypeOrmEntity, (comment) => comment.disasterId)
+  comments: CommentTypeOrmEntity[];
 }

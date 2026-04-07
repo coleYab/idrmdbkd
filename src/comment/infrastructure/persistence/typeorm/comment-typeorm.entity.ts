@@ -2,15 +2,23 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+import { DisasterTypeOrmEntity } from '../../../../disaster/infrastructure/persistence/typeorm/disaster-typeorm.entity';
+
 @Entity('comments')
+@Index(['disasterId'])
 export class CommentTypeOrmEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ManyToOne(() => DisasterTypeOrmEntity, (disaster) => disaster.comments, {
+    onDelete: 'CASCADE',
+  })
   @Column()
   disasterId: string;
 
