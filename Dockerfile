@@ -1,30 +1,26 @@
-# Development Dockerfile
+# Use Node.js base image
 FROM node:20.19.6-bookworm-slim
 
-# Install additional tools for development
-RUN apt-get update && apt-get install -y \
-  vim \
-  curl \
-  wget \
-  git \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
-
+# Set working directory
 WORKDIR /usr/src/app
 
-# Copy and install dependencies
+# Copy only package files first (better caching)
 COPY package.json package-lock.json ./
-RUN npm install
 
-# Copy the rest of the application files
+# Install dependencies (production only)
+RUN npm install --omit=dev
+
+# Copy the rest of the app
 COPY . .
 
-# Set the environment variables
-ARG APP_ENV=development
-ENV NODE_ENV=${APP_ENV}
+# Build the app
+RUN npm run build
 
-# Expose the application port
+# Set environment
+ENV NODE_ENV=production
+
+# Expose port
 EXPOSE 3000
 
-# Set the default command to run the application with nodemon
-CMD ["npm", "start:dev"]
+# Start the app
+CMD ["npm", "run", "start:prod"]
