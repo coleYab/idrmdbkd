@@ -28,4 +28,13 @@ export default (): any => ({
     ),
   },
   defaultAdminUserPassword: process.env.DEFAULT_ADMIN_USER_PASSWORD,
+  chapa: {
+    baseUrl: process.env.CHAPA_BASE_URL || 'https://api.chapa.co/v1',
+    publicKey: process.env.CHAPA_PUBLIC_KEY,
+    secretKey: process.env.CHAPA_SECRET_KEY,
+    encryptionKey: process.env.CHAPA_ENCRYPTION_KEY,
+    webhookSecret: process.env.CHAPA_WEBHOOK_SECRET,
+    callbackUrl: process.env.CHAPA_CALLBACK_URL,
+    returnUrl: process.env.CHAPA_RETURN_URL,
+  },
 });

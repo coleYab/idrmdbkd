@@ -1,4 +1,5 @@
 import { AggregateRoot } from '@nestjs/cqrs';
+
 import { ModuleCreatedEvent } from '../events/module-created.event';
 import { ModuleUpdatedEvent } from '../events/module-updated.event';
 

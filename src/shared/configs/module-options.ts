@@ -38,5 +38,12 @@ export const configModuleOptions: ConfigModuleOptions = {
     JWT_ACCESS_TOKEN_EXP_IN_SEC: Joi.number().required(),
     JWT_REFRESH_TOKEN_EXP_IN_SEC: Joi.number().required(),
     DEFAULT_ADMIN_USER_PASSWORD: Joi.string().required(),
+    CHAPA_BASE_URL: Joi.string().uri().optional(),
+    CHAPA_PUBLIC_KEY: Joi.string().optional(),
+    CHAPA_SECRET_KEY: Joi.string().required(),
+    CHAPA_ENCRYPTION_KEY: Joi.string().optional(),
+    CHAPA_WEBHOOK_SECRET: Joi.string().required(),
+    CHAPA_CALLBACK_URL: Joi.string().uri().required(),
+    CHAPA_RETURN_URL: Joi.string().uri().required(),
   }),
 };

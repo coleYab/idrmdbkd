@@ -13,7 +13,13 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -55,6 +61,7 @@ export class CommentController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @ApiOperation({ summary: 'Create comment API' })
+  @ApiBody({ type: CreateCommentDto })
   @ApiResponse({
     status: HttpStatus.CREATED,
     type: SwaggerBaseApiResponse(Comment),
@@ -79,6 +86,7 @@ export class CommentController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   @ApiOperation({ summary: 'Get comment by id API' })
+  @ApiParam({ name: 'id', type: String })
   @ApiResponse({
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse(Comment),
@@ -108,6 +116,10 @@ export class CommentController {
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse([CommentOutputDto]),
   })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: BaseApiErrorResponse,
+  })
   async findAll(
     @ReqContext() ctx: RequestContext,
     @Query() query: PaginationParamsDto,
@@ -124,9 +136,14 @@ export class CommentController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('disaster/:disasterId')
   @ApiOperation({ summary: 'Get comments by disaster id paginated API' })
+  @ApiParam({ name: 'disasterId', type: String })
   @ApiResponse({
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse([CommentOutputDto]),
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: BaseApiErrorResponse,
   })
   async findByDisasterId(
     @ReqContext() ctx: RequestContext,
@@ -149,9 +166,19 @@ export class CommentController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Put(':id')
   @ApiOperation({ summary: 'Update comment API' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ type: UpdateCommentDto })
   @ApiResponse({
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse(Comment),
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
   })
   async update(
     @ReqContext() ctx: RequestContext,
@@ -166,15 +193,21 @@ export class CommentController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete comment API' })
+  @ApiParam({ name: 'id', type: String })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
   })
   async delete(
     @ReqContext() ctx: RequestContext,
     @Param('id') id: string,
-  ): Promise<void> {
+  ): Promise<BaseApiResponse<void>> {
     this.logger.log(ctx, `${this.delete.name} was called`);
     await this.commentService.delete(id);
+    return { data: undefined, meta: {} };
   }
 
   private mapToOutput(comment: Comment): CommentOutputDto {

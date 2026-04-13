@@ -7,8 +7,8 @@ import { CreateLocationUseCase } from './application/use-cases/create/create-loc
 import { CreateLocationCampaignUseCase } from './application/use-cases/create/create-location-campaign.use-case';
 import { UpdateLocationUseCase } from './application/use-cases/update/update-location.use-case';
 import { LOCATION_REPOSITORY } from './domain/repositories/location.repository';
-import { LocationTypeOrmEntity } from './infrastructure/persistence/typeorm/location-typeorm.entity';
 import { LocationTypeOrmRepository } from './infrastructure/persistence/repositories/location-typeorm.repository';
+import { LocationTypeOrmEntity } from './infrastructure/persistence/typeorm/location-typeorm.entity';
 import { LocationController } from './interfaces/http/controllers/location.controller';
 
 @Module({

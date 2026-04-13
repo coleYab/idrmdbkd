@@ -55,6 +55,7 @@ export class IncidentController {
   @Post()
   @ApiOperation({
     summary: 'Create incident API',
+    description: 'Creates a new incident report.',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -62,6 +63,10 @@ export class IncidentController {
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     type: BaseApiErrorResponse,
   })
   @ApiBody({ type: ReportIncidentDto })
@@ -82,6 +87,7 @@ export class IncidentController {
   @Get(':id')
   @ApiOperation({
     summary: 'Get incident by id API',
+    description: 'Fetches a single incident by its identifier.',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -89,6 +95,10 @@ export class IncidentController {
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     type: BaseApiErrorResponse,
   })
   @ApiParam({
@@ -114,10 +124,15 @@ export class IncidentController {
   @Get()
   @ApiOperation({
     summary: 'Get incidents list API',
+    description: 'Fetches all incidents.',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse([Incident]),
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    type: BaseApiErrorResponse,
   })
   async findAll(
     @ReqContext() ctx: RequestContext,
@@ -132,6 +147,7 @@ export class IncidentController {
   @Put(':id')
   @ApiOperation({
     summary: 'Update incident API',
+    description: 'Updates incident details (title and description).',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -143,6 +159,10 @@ export class IncidentController {
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     type: BaseApiErrorResponse,
   })
   @ApiParam({
@@ -166,12 +186,17 @@ export class IncidentController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Delete incident API',
+    description: 'Deletes an incident by its identifier.',
   })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     type: BaseApiErrorResponse,
   })
   @ApiParam({
@@ -190,6 +215,8 @@ export class IncidentController {
   @Put(':id/resolve')
   @ApiOperation({
     summary: 'Resolve incident API',
+    description:
+      'Updates the incident status (e.g., resolves/verifies/rejects).',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -201,6 +228,10 @@ export class IncidentController {
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     type: BaseApiErrorResponse,
   })
   @ApiParam({

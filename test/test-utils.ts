@@ -1,6 +1,6 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { createConnection, getConnection } from 'typeorm';
+import { createConnection, getConnectionManager } from 'typeorm';
 
 import { ROLE } from '../src/auth/constants/role.constant';
 import { LoginInput } from '../src/auth/dtos/auth-login-input.dto';
@@ -18,6 +18,37 @@ export const resetDBBeforeTest = async (): Promise<void> => {
   // This overwrites the DB_NAME used in the SharedModule's TypeORM init.
   // All the tests will run against the e2e db due to this overwrite.
   process.env.DB_NAME = TEST_DB_NAME;
+
+  process.env.APP_ENV = process.env.APP_ENV || 'test';
+  process.env.APP_PORT = process.env.APP_PORT || '3001';
+  process.env.DB_HOST = process.env.DB_HOST || TEST_DB_HOST;
+  process.env.DB_PORT = process.env.DB_PORT || '5432';
+  process.env.DB_USER = process.env.DB_USER || 'root';
+  process.env.DB_PASS = process.env.DB_PASS || 'example';
+
+  const jwtPublic =
+    process.env.JWT_PUBLIC_KEY_BASE64 ||
+    Buffer.from('public').toString('base64');
+  const jwtPrivate =
+    process.env.JWT_PRIVATE_KEY_BASE64 ||
+    Buffer.from('private').toString('base64');
+  process.env.JWT_PUBLIC_KEY_BASE64 = jwtPublic;
+  process.env.JWT_PRIVATE_KEY_BASE64 = jwtPrivate;
+  process.env.JWT_ACCESS_TOKEN_EXP_IN_SEC =
+    process.env.JWT_ACCESS_TOKEN_EXP_IN_SEC || '3600';
+  process.env.JWT_REFRESH_TOKEN_EXP_IN_SEC =
+    process.env.JWT_REFRESH_TOKEN_EXP_IN_SEC || '86400';
+  process.env.DEFAULT_ADMIN_USER_PASSWORD =
+    process.env.DEFAULT_ADMIN_USER_PASSWORD || 'default-admin-password';
+
+  process.env.CHAPA_SECRET_KEY =
+    process.env.CHAPA_SECRET_KEY || 'test-secret-key';
+  process.env.CHAPA_WEBHOOK_SECRET =
+    process.env.CHAPA_WEBHOOK_SECRET || 'test-webhook-secret';
+  process.env.CHAPA_CALLBACK_URL =
+    process.env.CHAPA_CALLBACK_URL || 'http://localhost/callback';
+  process.env.CHAPA_RETURN_URL =
+    process.env.CHAPA_RETURN_URL || 'http://localhost/return';
 
   console.log(`Dropping ${TEST_DB_NAME} database and recreating it`);
   const connection = await createConnection({
@@ -37,18 +68,10 @@ export const resetDBBeforeTest = async (): Promise<void> => {
 };
 
 export const createDBEntities = async (): Promise<void> => {
-  console.log(`Creating entities in ${TEST_DB_NAME} database`);
-  await createConnection({
-    name: TEST_DB_CONNECTION_NAME,
-    type: 'postgres',
-    host: TEST_DB_HOST,
-    port: 5432,
-    username: 'root',
-    password: 'example',
-    database: TEST_DB_NAME,
-    entities: [__dirname + '/../src/**/*.entity{.ts,.js}'],
-    synchronize: true,
-  });
+  // Nest's TypeOrmModule (in SharedModule) will establish the application's
+  // connection and run schema sync. We only create the database itself in
+  // resetDBBeforeTest().
+  console.log(`Skipping explicit entity sync for ${TEST_DB_NAME} database`);
 };
 
 export const seedAdminUser = async (
@@ -89,7 +112,10 @@ export const seedAdminUser = async (
 
 export const closeDBAfterTest = async (): Promise<void> => {
   console.log(`Closing connection to ${TEST_DB_NAME} database`);
-  const connection = await getConnection(TEST_DB_CONNECTION_NAME);
-
-  await connection.close();
+  const manager = getConnectionManager();
+  await Promise.all(
+    manager.connections
+      .filter((conn) => conn.isConnected)
+      .map(async (conn) => conn.close()),
+  );
 };

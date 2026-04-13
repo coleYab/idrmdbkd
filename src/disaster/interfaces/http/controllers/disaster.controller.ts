@@ -12,7 +12,13 @@ import {
   Put,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -49,6 +55,7 @@ export class DisasterController {
   @ApiOperation({
     summary: 'Create disaster API',
   })
+  @ApiBody({ type: CreateDisasterDto })
   @ApiResponse({
     status: HttpStatus.CREATED,
     type: SwaggerBaseApiResponse(Disaster),
@@ -75,6 +82,7 @@ export class DisasterController {
   @ApiOperation({
     summary: 'Get disaster by id API',
   })
+  @ApiParam({ name: 'id', type: String })
   @ApiResponse({
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse(Disaster),
@@ -120,9 +128,19 @@ export class DisasterController {
   @ApiOperation({
     summary: 'Update disaster API',
   })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ type: UpdateDisasterDto })
   @ApiResponse({
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse(Disaster),
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
   })
   async update(
     @ReqContext() ctx: RequestContext,
@@ -135,14 +153,30 @@ export class DisasterController {
     return { data: disaster, meta: {} };
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post('from/:id')
+  @ApiOperation({
+    summary: 'Create disaster from incident API',
+  })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: SwaggerBaseApiResponse(Disaster),
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: BaseApiErrorResponse,
+  })
   async createFromIncident(
     @Param('id') id: string,
-    // @Body() dto: CreateDisasterDto,
     @ReqContext() ctx: RequestContext,
-  ): Promise<Disaster> {
+  ): Promise<BaseApiResponse<Disaster>> {
     const userId = ctx.user?.id.toString() || uuidv4();
-    return await this.createDisasterFromIncidentUseCase.execute(userId, id);
+    const disaster = await this.createDisasterFromIncidentUseCase.execute(
+      userId,
+      id,
+    );
+    return { data: disaster, meta: {} };
   }
 
   @Delete(':id')
@@ -150,14 +184,21 @@ export class DisasterController {
   @ApiOperation({
     summary: 'Delete disaster API',
   })
+  @ApiParam({ name: 'id', type: String })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
+    type: BaseApiResponse<void>,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
   })
   async delete(
     @ReqContext() ctx: RequestContext,
     @Param('id') id: string,
-  ): Promise<void> {
+  ): Promise<BaseApiResponse<void>> {
     this.logger.log(ctx, `${this.delete.name} was called`);
     await this.disasterService.delete(id);
+    return { data: undefined, meta: {} };
   }
 }

@@ -2,17 +2,16 @@ import { Module } from '@nestjs/common';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DonationModule } from './donation/donation.module';
-
 import { AuthModule } from './auth/auth.module';
+import { CommentModule } from './comment/comment.module';
 import { DisasterModule } from './disaster/disaster.module';
-import { LocationModule } from './location/location.module';
+import { DonationModule } from './donation/donation.module';
 import { IncidentModule } from './incident/incident.module';
+import { LocationModule } from './location/location.module';
 import { ModuleModule } from './module/module.module';
+import { NotificationModule } from './notification/notification.module';
 import { SharedModule } from './shared/shared.module';
 import { UserModule } from './user/user.module';
-import { NotificationModule } from './notification/notification.module';
-import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [

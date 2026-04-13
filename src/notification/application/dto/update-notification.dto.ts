@@ -1,4 +1,5 @@
 import { IsEnum, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+
 import { NotificationStatus } from '../../domain/entities/notification.entity';
 
 export class UpdateNotificationDto {

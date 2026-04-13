@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 
 import { CommentTypeOrmEntity } from '../../../../comment/infrastructure/persistence/typeorm/comment-typeorm.entity';
-
 import {
   DisasterSeverityLevel,
   DisasterStatus,
