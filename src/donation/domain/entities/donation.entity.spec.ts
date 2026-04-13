@@ -1,7 +1,7 @@
-import { Donation } from './donation.entity';
 import { DonationStatus } from '../enums/donation-status.enum';
 import { PaymentMethod } from '../enums/payment-method.enum';
 import { DonorInfo } from '../value-objects/donor-info.vo';
+import { Donation } from './donation.entity';
 
 describe('Donation', () => {
   const donor = new DonorInfo(
