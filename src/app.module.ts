@@ -11,6 +11,7 @@ import { LocationModule } from './location/location.module';
 import { ModuleModule } from './module/module.module';
 import { NotificationModule } from './notification/notification.module';
 import { SharedModule } from './shared/shared.module';
+import { UploadModule } from './upload/upload.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -25,6 +26,7 @@ import { UserModule } from './user/user.module';
     DonationModule,
     NotificationModule,
     CommentModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
