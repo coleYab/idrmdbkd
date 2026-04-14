@@ -28,7 +28,6 @@ if (!existsSync(uploadsPath)) {
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
-  // Mobile usage: send multipart/form-data to POST /api/v1/uploads with key "file" (e.g. React Native: formData.append('file', { uri, name: 'photo.jpg', type: 'image/jpeg' } as any)).
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
