@@ -32,8 +32,12 @@ export class IncidentService {
       throw new Error('Incident not found');
     }
 
-    if (status == IncidentStatus.ACTIVE) {
+    if (status === IncidentStatus.VERIFIED) {
       return this.approve(id, userId);
+    }
+
+    if (status === IncidentStatus.ACTIVE || status === IncidentStatus.PENDING) {
+      throw new Error('Incident status must be rejection status if it is not a verification status');
     }
 
     incident.reject(userId);
