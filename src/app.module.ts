@@ -10,6 +10,7 @@ import { IncidentModule } from './incident/incident.module';
 import { LocationModule } from './location/location.module';
 import { ModuleModule } from './module/module.module';
 import { NotificationModule } from './notification/notification.module';
+import { ResourcesModule } from './resources/resources.module';
 import { SharedModule } from './shared/shared.module';
 import { UploadModule } from './upload/upload.module';
 import { UserModule } from './user/user.module';
@@ -27,6 +28,7 @@ import { UserModule } from './user/user.module';
     NotificationModule,
     CommentModule,
     UploadModule,
+    ResourcesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
