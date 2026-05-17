@@ -1,4 +1,4 @@
-import { BadRequestException,Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { InventoryItems } from '../../domain/entities/inventory-items.entity';
@@ -16,11 +16,18 @@ export class InventoryItemsService {
   ) {}
 
   public async create(dto: CreateInventoryItemDto): Promise<InventoryItems> {
+    const locationGeo = dto.location
+      ? {
+          type: 'Point',
+          coordinates: [dto.location.longitude, dto.location.latitude],
+        }
+      : null;
+
     const item = new InventoryItems(
       uuidv4(),
       dto.resourceID,
       dto.quantity,
-      dto.location,
+      locationGeo,
       new Date(),
       new Date(),
     );
@@ -40,8 +47,11 @@ export class InventoryItemsService {
     return this.inventoryRepository.findByResourceId(resourceID);
   }
 
-  public async findByLocation(location: string): Promise<InventoryItems[]> {
-    return this.inventoryRepository.findByLocation(location);
+  public async findByLocation(
+    location: string,
+    radiusMeters?: number,
+  ): Promise<InventoryItems[]> {
+    return this.inventoryRepository.findByLocation(location, radiusMeters);
   }
 
   public async updateStock(

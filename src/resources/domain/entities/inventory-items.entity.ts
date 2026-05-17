@@ -4,7 +4,8 @@ export class InventoryItems extends AggregateRoot {
   private itemID: string;
   private resourceID: string;
   private quantity: number;
-  private location: string;
+  // GeoJSON Point: { type: 'Point', coordinates: [lon, lat] }
+  private location: any;
   private lastRestocked?: Date;
   private createdAt: Date;
   private updatedAt: Date;
@@ -13,7 +14,7 @@ export class InventoryItems extends AggregateRoot {
     itemID: string,
     resourceID: string,
     quantity: number,
-    location: string,
+    location: any,
     createdAt: Date,
     updatedAt: Date,
     lastRestocked?: Date,
@@ -40,7 +41,7 @@ export class InventoryItems extends AggregateRoot {
     return this.quantity;
   }
 
-  public getLocation(): string {
+  public getLocation(): any {
     return this.location;
   }
 

@@ -9,6 +9,10 @@ import {
   RESOURCE_NEED_REPOSITORY,
   ResourceNeedRepository,
 } from '../../domain/repositories/resource-need.repository';
+import {
+  INVENTORY_ITEMS_REPOSITORY,
+  InventoryItemsRepository,
+} from '../../domain/repositories/inventory-items.repository';
 import { CreateResourceNeedDto } from '../dto/create-resource-need.dto';
 
 @Injectable()
@@ -16,6 +20,8 @@ export class ResourceNeedService {
   constructor(
     @Inject(RESOURCE_NEED_REPOSITORY)
     private readonly resourceNeedRepository: ResourceNeedRepository,
+    @Inject(INVENTORY_ITEMS_REPOSITORY)
+    private readonly inventoryRepository: InventoryItemsRepository,
   ) {}
 
   public async create(dto: CreateResourceNeedDto): Promise<ResourceNeed> {
@@ -100,5 +106,48 @@ export class ResourceNeedService {
 
   public async delete(id: string): Promise<void> {
     await this.resourceNeedRepository.delete(id);
+  }
+
+  /**
+   * Allocate supplies to a need by finding nearby inventory items (nearest first)
+   * Accepts a center point (latitude, longitude) and radius in kilometers.
+   */
+  public async allocate(
+    id: string,
+    latitude: number,
+    longitude: number,
+    radiusKm = 50,
+  ) {
+    const need = await this.resourceNeedRepository.findById(id);
+    if (!need) throw new Error('Resource need not found');
+
+    const remaining = need.getQuantityRequired() - need.getFulfilledQuantity();
+    if (remaining <= 0) return { allocated: [], remaining: 0 };
+
+    const radiusMeters = Math.round(radiusKm * 1000);
+    const candidates = await this.inventoryRepository.findNearby(
+      need.getResourceID(),
+      latitude,
+      longitude,
+      radiusMeters,
+    );
+
+    const plan: Array<any> = [];
+    let toAllocate = remaining;
+    for (const item of candidates) {
+      if (toAllocate <= 0) break;
+      const available = item.getQuantity();
+      if (available <= 0) continue;
+      const allocate = Math.min(available, toAllocate);
+      plan.push({
+        itemID: item.getItemID(),
+        available,
+        allocate,
+        location: item.getLocation(),
+      });
+      toAllocate -= allocate;
+    }
+
+    return { allocated: plan, remaining: toAllocate };
   }
 }

@@ -2,11 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
 } from 'typeorm';
+
 import { ResourceTypeOrmEntity } from './resource-typeorm.entity';
 
 export enum ResourceNeedPriorityEnum {

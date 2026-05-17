@@ -39,11 +39,6 @@ import { AppLoggerModule } from './logger/logger.module';
           return {
             ...commonOptions,
             url: databaseUrl,
-            ssl: shouldUseSsl
-              ? {
-                  rejectUnauthorized: false,
-                }
-              : undefined,
           };
         }
 
@@ -54,11 +49,6 @@ import { AppLoggerModule } from './logger/logger.module';
           database: configService.get<string>('database.name'),
           username: configService.get<string>('database.user'),
           password: configService.get<string>('database.pass'),
-          ssl: shouldUseSsl
-            ? {
-                rejectUnauthorized: false,
-              }
-            : undefined,
         };
       },
     }),

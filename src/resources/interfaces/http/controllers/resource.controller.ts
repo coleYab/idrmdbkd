@@ -14,7 +14,7 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiQuery,ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -29,6 +29,8 @@ import { CreateResourceDto } from '../../../application/dto/create-resource.dto'
 import { UpdateResourceDto } from '../../../application/dto/update-resource.dto';
 import { ResourceService } from '../../../application/services/resource.service';
 import { Resource } from '../../../domain/entities/resource.entity';
+import { InventoryItemsService } from '../../../application/services/inventory-items.service';
+import { ResourceNeedService } from '../../../application/services/resource-need.service';
 
 @ApiTags('resources')
 @Controller('resources')
@@ -36,6 +38,8 @@ export class ResourceController {
   constructor(
     private readonly resourceService: ResourceService,
     private readonly logger: AppLogger,
+    private readonly inventoryService: InventoryItemsService,
+    private readonly resourceNeedService: ResourceNeedService,
   ) {
     this.logger.setContext(ResourceController.name);
   }
@@ -203,5 +207,31 @@ export class ResourceController {
     }
 
     await this.resourceService.delete(id);
+  }
+
+  @Get('map')
+  @ApiOperation({
+    summary: 'Map resources and needs (optionally near a point)',
+  })
+  @ApiResponse({ status: HttpStatus.OK })
+  async mapResources(
+    @ReqContext() ctx: RequestContext,
+    @Query('lat') lat?: string,
+    @Query('lon') lon?: string,
+    @Query('radiusKm') radiusKm?: string,
+  ): Promise<BaseApiResponse<any>> {
+    this.logger.log(ctx, `${this.mapResources.name} was called`);
+
+    let inventories;
+    if (lat && lon) {
+      const loc = `${lat},${lon}${radiusKm ? ',' + parseFloat(radiusKm) * 1000 : ''}`;
+      inventories = await this.inventoryService.findByLocation(loc);
+    } else {
+      inventories = await this.inventoryService.findAll();
+    }
+
+    const needs = await this.resourceNeedService.findAll();
+
+    return { data: { inventories, needs }, meta: {} };
   }
 }

@@ -1,11 +1,19 @@
 import {
   IsNotEmpty,
   IsNumber,
-  IsString,
   IsUUID,
-  MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+
+class LocationDto {
+  @IsNumber()
+  latitude: number;
+
+  @IsNumber()
+  longitude: number;
+}
 
 export class CreateInventoryItemDto {
   @IsNotEmpty()
@@ -18,7 +26,7 @@ export class CreateInventoryItemDto {
   quantity: number;
 
   @IsNotEmpty()
-  @IsString()
-  @MaxLength(255)
-  location: string;
+  @ValidateNested()
+  @Type(() => LocationDto)
+  location: LocationDto;
 }

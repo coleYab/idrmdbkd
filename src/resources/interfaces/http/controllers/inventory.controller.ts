@@ -14,7 +14,7 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiQuery,ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import {
   BaseApiErrorResponse,
@@ -80,12 +80,17 @@ export class InventoryController {
   async findAll(
     @ReqContext() ctx: RequestContext,
     @Query('location') location?: string,
+    @Query('radius') radius?: string,
   ): Promise<BaseApiResponse<InventoryItems[]>> {
     this.logger.log(ctx, `${this.findAll.name} was called`);
 
     let items: InventoryItems[];
     if (location) {
-      items = await this.inventoryService.findByLocation(location);
+      const radiusMeters = radius ? parseInt(radius, 10) : undefined;
+      items = await this.inventoryService.findByLocation(
+        location,
+        radiusMeters,
+      );
     } else {
       items = await this.inventoryService.findAll();
     }

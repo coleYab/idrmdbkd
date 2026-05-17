@@ -11,6 +11,7 @@ import { LocationModule } from './location/location.module';
 import { ModuleModule } from './module/module.module';
 import { NotificationModule } from './notification/notification.module';
 import { ResourcesModule } from './resources/resources.module';
+import { ErtModule } from './ert/ert.module';
 import { SharedModule } from './shared/shared.module';
 import { UploadModule } from './upload/upload.module';
 import { UserModule } from './user/user.module';
@@ -29,6 +30,7 @@ import { UserModule } from './user/user.module';
     CommentModule,
     UploadModule,
     ResourcesModule,
+    ErtModule,
   ],
   controllers: [AppController],
   providers: [AppService],

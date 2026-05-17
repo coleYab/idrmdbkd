@@ -12,8 +12,9 @@ import {
   Post,
   Query,
   UseInterceptors,
+  BadRequestException,
 } from '@nestjs/common';
-import { ApiOperation, ApiQuery,ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import {
   BaseApiErrorResponse,
@@ -27,6 +28,7 @@ import { CreateResourceNeedDto } from '../../../application/dto/create-resource-
 import { UpdateResourceNeedStatusDto } from '../../../application/dto/update-resource-need.dto';
 import { ResourceNeedService } from '../../../application/services/resource-need.service';
 import { ResourceNeed } from '../../../domain/entities/resource-need.entity';
+// allocation body validated inline
 
 @ApiTags('resources/needs')
 @Controller('resources/needs')
@@ -198,6 +200,34 @@ export class ResourceNeedController {
 
     const progress = await this.resourceNeedService.getFulfillmentProgress(id);
     return { data: progress, meta: {} };
+  }
+
+  @Post(':id/allocate')
+  @ApiOperation({
+    summary: 'Allocate nearby inventory to satisfy a resource need (GIS-based)',
+  })
+  @ApiResponse({ status: HttpStatus.OK })
+  async allocate(
+    @ReqContext() ctx: RequestContext,
+    @Param('id') id: string,
+    @Body() body: { latitude: number; longitude: number; radiusKm?: number },
+  ): Promise<BaseApiResponse<any>> {
+    this.logger.log(ctx, `${this.allocate.name} was called`);
+
+    if (
+      typeof body.latitude !== 'number' ||
+      typeof body.longitude !== 'number'
+    ) {
+      throw new BadRequestException('latitude and longitude are required');
+    }
+
+    const result = await this.resourceNeedService.allocate(
+      id,
+      body.latitude,
+      body.longitude,
+      body.radiusKm ?? 50,
+    );
+    return { data: result, meta: {} };
   }
 
   @Delete(':id')

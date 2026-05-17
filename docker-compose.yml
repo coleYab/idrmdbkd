@@ -29,7 +29,7 @@ services:
       - pgsqldb
 
   pgsqldb:
-    image: postgres:16.3
+    image: postgis/postgis:16-3.4
     environment:
       POSTGRES_USER: "${DB_USER}"
       POSTGRES_PASSWORD: "${DB_PASS}"

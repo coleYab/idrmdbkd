@@ -4,8 +4,10 @@ import { DataSource } from 'typeorm';
 dotenv.config();
 
 const shouldUseSsl =
-  Boolean(process.env.DATABASE_URL) ||
-  Boolean(process.env.DB_HOST?.includes('neon.tech'));
+  Boolean(process.env.DATABASE_URL?.includes('neon.tech')) ||
+  Boolean(process.env.DB_HOST?.includes('neon.tech')) ||
+  Boolean(process.env.DB_HOST?.includes('render.com')) ||
+  process.env.NODE_ENV === 'production';
 
 const typeOrmConfig = new DataSource({
   type: 'postgres',
@@ -22,7 +24,7 @@ const typeOrmConfig = new DataSource({
     ? {
         rejectUnauthorized: false,
       }
-    : undefined,
+    : false,
   entities: [__dirname + '/src/**/entities/*.entity{.ts,.js}'],
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   migrationsRun: true,

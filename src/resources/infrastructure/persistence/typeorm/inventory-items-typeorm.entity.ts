@@ -21,8 +21,14 @@ export class InventoryItemsTypeOrmEntity {
   @Column({ type: 'int', default: 0 })
   quantity: number;
 
-  @Column({ type: 'varchar', length: 255 })
-  location: string;
+  // PostGIS Point stored in EPSG:4326
+  @Column({
+    type: 'geometry',
+    spatialFeatureType: 'Point',
+    srid: 4326,
+    nullable: true,
+  })
+  location: any;
 
   @Column({ type: 'timestamp', nullable: true })
   lastRestocked?: Date;
