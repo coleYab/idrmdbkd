@@ -76,6 +76,23 @@ export class NotificationTypeOrmRepository implements NotificationRepository {
     await this.repository.save(entity);
   }
 
+  async saveMany(notifications: Notification[]): Promise<void> {
+    const entities = notifications.map((notification) => {
+      const entity = new NotificationTypeOrmEntity();
+      entity.id = notification.getId();
+      entity.title = notification.getTitle();
+      entity.message = notification.getMessage();
+      entity.recipient = notification.getRecipient();
+      entity.type = notification.getType();
+      entity.status = notification.getStatus();
+      entity.createdAt = notification.getCreatedAt();
+      entity.updatedAt = notification.getUpdatedAt();
+      return entity;
+    });
+
+    await this.repository.save(entities);
+  }
+
   async update(notification: Notification): Promise<void> {
     const entity = await this.repository.findOne({
       where: { id: notification.getId() },

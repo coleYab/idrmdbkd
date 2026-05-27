@@ -6,6 +6,7 @@ export interface NotificationRepository {
   findAll(): Promise<Notification[]>;
   findByRecipient(recipient: string): Promise<Notification[]>;
   save(notification: Notification): Promise<void>;
+  saveMany(notifications: Notification[]): Promise<void>;
   update(notification: Notification): Promise<void>;
   delete(id: string): Promise<void>;
 }
