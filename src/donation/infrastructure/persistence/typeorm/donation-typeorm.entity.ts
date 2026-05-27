@@ -2,12 +2,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { DonationStatus } from '../../../domain/enums/donation-status.enum';
 import { PaymentMethod } from '../../../domain/enums/payment-method.enum';
+import { DonationCampaignTypeOrmEntity } from './donation-campaign-typeorm.entity';
+import { User } from '../../../../user/entities/user.entity';
 
 @Entity('donations')
 export class DonationTypeOrmEntity {
@@ -68,4 +71,15 @@ export class DonationTypeOrmEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(
+    () => DonationCampaignTypeOrmEntity,
+    (campaign) => campaign.donations,
+    { nullable: true }
+  )
+  campaign?: DonationCampaignTypeOrmEntity;
+
+  @ManyToOne(() => User, { nullable: true })
+  @Column({ type: 'int', nullable: true })
+  donorUserId?: number;
 }

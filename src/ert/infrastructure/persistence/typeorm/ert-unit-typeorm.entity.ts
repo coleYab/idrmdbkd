@@ -2,9 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { ModuleTypeOrmEntity } from '../../../../module/infrastructure/persistence/typeorm/module-typeorm.entity';
+import { LocationTypeOrmEntity } from '../../../../location/infrastructure/persistence/typeorm/location-typeorm.entity';
+import { User } from '../../../../user/entities/user.entity';
 
 @Entity('ert_units')
 export class ErtUnitTypeOrmEntity {
@@ -34,4 +39,18 @@ export class ErtUnitTypeOrmEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => ModuleTypeOrmEntity, (module) => module.units, {
+    nullable: true,
+  })
+  @Column({ type: 'uuid', nullable: true })
+  moduleId?: string;
+
+  @ManyToOne(() => LocationTypeOrmEntity, { nullable: true })
+  @Column({ type: 'uuid', nullable: true })
+  locationId?: string;
+
+  @ManyToOne(() => User, { nullable: true })
+  @Column({ type: 'int', nullable: true })
+  assignedToUserId?: number;
 }

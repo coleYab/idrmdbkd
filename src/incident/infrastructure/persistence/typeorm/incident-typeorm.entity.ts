@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -11,6 +12,8 @@ import {
   IncidentStatus,
   IncidentType,
 } from '../../../../shared/enums/incident.enums';
+import { LocationTypeOrmEntity } from '../../../../location/infrastructure/persistence/typeorm/location-typeorm.entity';
+import { User } from '../../../../user/entities/user.entity';
 
 @Entity('incidents')
 export class IncidentTypeOrmEntity {
@@ -72,4 +75,12 @@ export class IncidentTypeOrmEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => LocationTypeOrmEntity, { nullable: true })
+  @Column({ type: 'uuid', nullable: true })
+  locationId?: string;
+
+  @ManyToOne(() => User, { nullable: true })
+  @Column({ type: 'int', nullable: true })
+  reportedByUserId?: number;
 }

@@ -2,11 +2,16 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { CampaignStatus } from '../../../domain/enums/campaign-status.enum';
+import { DisasterTypeOrmEntity } from '../../../../disaster/infrastructure/persistence/typeorm/disaster-typeorm.entity';
+import { User } from '../../../../user/entities/user.entity';
+import { DonationTypeOrmEntity } from './donation-typeorm.entity';
 
 @Entity('donation_campaigns')
 export class DonationCampaignTypeOrmEntity {
@@ -42,4 +47,17 @@ export class DonationCampaignTypeOrmEntity {
 
   @Column({ type: 'timestamp', nullable: true })
   closedAt?: Date;
+
+  @ManyToOne(() => DisasterTypeOrmEntity, { nullable: true })
+  @Column({ type: 'uuid', nullable: true })
+  disasterId?: string;
+
+  @ManyToOne(() => User, { nullable: true })
+  @Column({ type: 'int', nullable: true })
+  createdByUserId?: number;
+
+  @OneToMany(() => DonationTypeOrmEntity, (donation) => donation.campaign, {
+    cascade: false,
+  })
+  donations?: DonationTypeOrmEntity[];
 }

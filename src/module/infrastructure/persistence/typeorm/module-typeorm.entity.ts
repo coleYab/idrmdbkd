@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { ErtUnitTypeOrmEntity } from '../../../../ert/infrastructure/persistence/typeorm/ert-unit-typeorm.entity';
 
 @Entity('modules')
 export class ModuleTypeOrmEntity {
@@ -22,4 +25,9 @@ export class ModuleTypeOrmEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => ErtUnitTypeOrmEntity, (unit) => unit.moduleId, {
+    cascade: false,
+  })
+  units?: ErtUnitTypeOrmEntity[];
 }
