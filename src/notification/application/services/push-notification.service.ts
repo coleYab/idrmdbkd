@@ -22,13 +22,29 @@ export class PushNotificationService {
       throw new BadRequestException('Provide either clerkUserId or email');
     }
 
-    const existing = await this.notificationPushTokenRepository.findByKey(key);
-    const token = existing ?? new NotificationPushToken();
+    // Prefer finding by pushToken to avoid duplicates for the same device
+    const byToken = await this.notificationPushTokenRepository.findByPushToken(
+      dto.pushToken,
+    );
+    if (byToken) {
+      byToken.key = key;
+      byToken.email = dto.email || null;
+      return this.notificationPushTokenRepository.save(byToken);
+    }
 
+    // If a record exists for this user key, update its token instead of creating a duplicate
+    const byKey = await this.notificationPushTokenRepository.findByKey(key);
+    if (byKey) {
+      byKey.pushToken = dto.pushToken;
+      byKey.email = dto.email || null;
+      return this.notificationPushTokenRepository.save(byKey);
+    }
+
+    // Otherwise, create a new record for this token and key
+    const token = new NotificationPushToken();
     token.key = key;
     token.email = dto.email || null;
     token.pushToken = dto.pushToken;
-
     return this.notificationPushTokenRepository.save(token);
   }
 
@@ -40,7 +56,10 @@ export class PushNotificationService {
 
     const messages = tokens
       .map((token: NotificationPushToken) => token.pushToken)
-      .filter((token): token is string => Boolean(token) && Expo.isExpoPushToken(token))
+      .filter(
+        (token): token is string =>
+          Boolean(token) && Expo.isExpoPushToken(token),
+      )
       .map<ExpoPushMessage>((token) => ({
         to: token,
         sound: 'default',

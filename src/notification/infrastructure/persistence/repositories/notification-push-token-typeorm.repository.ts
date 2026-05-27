@@ -6,9 +6,7 @@ import { NotificationPushToken } from '../../../domain/entities/notification-pus
 import { NotificationPushTokenRepository } from '../../../domain/repositories/notification-push-token.repository';
 
 @Injectable()
-export class NotificationPushTokenTypeOrmRepository
-  implements NotificationPushTokenRepository
-{
+export class NotificationPushTokenTypeOrmRepository implements NotificationPushTokenRepository {
   constructor(
     @InjectRepository(NotificationPushToken)
     private readonly repository: Repository<NotificationPushToken>,
@@ -20,6 +18,10 @@ export class NotificationPushTokenTypeOrmRepository
 
   async findByKey(key: string): Promise<NotificationPushToken | null> {
     return this.repository.findOne({ where: { key } });
+  }
+
+  async findByPushToken(pushToken: string): Promise<NotificationPushToken | null> {
+    return this.repository.findOne({ where: { pushToken } });
   }
 
   async save(token: NotificationPushToken): Promise<NotificationPushToken> {

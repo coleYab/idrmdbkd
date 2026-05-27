@@ -11,13 +11,13 @@ export class NotificationPushToken {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 255, unique: true })
+  @Column({ length: 255 })
   key: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   email: string | null;
 
-  @Column({ length: 255 })
+  @Column({ length: 255, unique: true })
   pushToken: string;
 
   @CreateDateColumn()

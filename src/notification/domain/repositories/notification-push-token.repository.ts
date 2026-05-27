@@ -7,5 +7,6 @@ export const NOTIFICATION_PUSH_TOKEN_REPOSITORY = Symbol.for(
 export interface NotificationPushTokenRepository {
   findAll(): Promise<NotificationPushToken[]>;
   findByKey(key: string): Promise<NotificationPushToken | null>;
+  findByPushToken(pushToken: string): Promise<NotificationPushToken | null>;
   save(token: NotificationPushToken): Promise<NotificationPushToken>;
 }

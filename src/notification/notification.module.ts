@@ -17,7 +17,10 @@ import { NotificationController } from './interfaces/http/controllers/notificati
 @Module({
   imports: [
     SharedModule,
-    TypeOrmModule.forFeature([NotificationTypeOrmEntity, NotificationPushToken]),
+    TypeOrmModule.forFeature([
+      NotificationTypeOrmEntity,
+      NotificationPushToken,
+    ]),
   ],
   controllers: [NotificationController],
   providers: [
