@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { compare, hash } from 'bcryptjs';
 import { plainToClass } from 'class-transformer';
 
+import { AuditLogService } from '../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { CreateUserInput } from '../dtos/user-create-input.dto';
@@ -14,6 +15,7 @@ import { UserRepository } from '../repositories/user.repository';
 export class UserService {
   constructor(
     private repository: UserRepository,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(UserService.name);
@@ -30,6 +32,13 @@ export class UserService {
 
     this.logger.log(ctx, `calling ${UserRepository.name}.saveUser`);
     await this.repository.save(user);
+
+    await this.auditLogService.create(
+      'CREATE',
+      'User',
+      `User created: ${input.username}`,
+      user.id,
+    );
 
     return plainToClass(UserOutput, user, {
       excludeExtraneousValues: true,
@@ -135,6 +144,13 @@ export class UserService {
 
     this.logger.log(ctx, `calling ${UserRepository.name}.save`);
     await this.repository.save(updatedUser);
+
+    await this.auditLogService.create(
+      'UPDATE',
+      'User',
+      `User updated: userId=${userId}`,
+      userId,
+    );
 
     return plainToClass(UserOutput, updatedUser, {
       excludeExtraneousValues: true,

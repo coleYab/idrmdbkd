@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuditLogModule } from '../audit-log/audit-log.module';
 import { IncidentModule } from '../incident/incident.module';
 import { SharedModule } from '../shared/shared.module';
 import { DisasterService } from './application/services/disaster.service';
@@ -15,6 +16,7 @@ import { DisasterController } from './interfaces/http/controllers/disaster.contr
 @Module({
   imports: [
     SharedModule,
+    AuditLogModule,
     TypeOrmModule.forFeature([DisasterTypeOrmEntity]),
     IncidentModule,
   ],

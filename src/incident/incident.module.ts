@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuditLogModule } from '../audit-log/audit-log.module';
 import { SharedModule } from '../shared/shared.module';
 import { IncidentService } from './application/services/incident.service';
 import { CreateIncidentUseCase } from './application/use-cases/create-module/create-incident.use-case';
@@ -11,7 +12,7 @@ import { IncidentTypeOrmEntity } from './infrastructure/persistence/typeorm/inci
 import { IncidentController } from './interfaces/http/controllers/incident.controller';
 
 @Module({
-  imports: [SharedModule, TypeOrmModule.forFeature([IncidentTypeOrmEntity])],
+  imports: [SharedModule, AuditLogModule, TypeOrmModule.forFeature([IncidentTypeOrmEntity])],
   controllers: [IncidentController],
   providers: [
     CreateIncidentUseCase,

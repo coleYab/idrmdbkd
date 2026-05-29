@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
+import { AuditLogModule } from '../audit-log/audit-log.module';
 import { SharedModule } from '../shared/shared.module';
 import { UserModule } from '../user/user.module';
 import { STRATEGY_JWT_AUTH } from './constants/strategy.constant';
@@ -15,6 +16,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 @Module({
   imports: [
     SharedModule,
+    AuditLogModule,
     PassportModule.register({ defaultStrategy: STRATEGY_JWT_AUTH }),
     JwtModule.registerAsync({
       imports: [SharedModule],

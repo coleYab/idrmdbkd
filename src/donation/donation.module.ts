@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuditLogModule } from '../audit-log/audit-log.module';
 import { SharedModule } from '../shared/shared.module';
 import { DonationService } from './application/services/donation.service';
 import { DonationCampaignService } from './application/services/donation-campaign.service';
@@ -17,6 +18,7 @@ import { DonationController } from './interfaces/http/controllers/donation.contr
 @Module({
   imports: [
     SharedModule,
+    AuditLogModule,
     TypeOrmModule.forFeature([
       DonationTypeOrmEntity,
       DonationCampaignTypeOrmEntity,

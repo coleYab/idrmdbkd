@@ -21,6 +21,7 @@ import {
   BaseApiResponse,
   SwaggerBaseApiResponse,
 } from '../../../../shared/dtos/base-api-response.dto';
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
@@ -35,6 +36,7 @@ import { ResourceNeed } from '../../../domain/entities/resource-need.entity';
 export class ResourceNeedController {
   constructor(
     private readonly resourceNeedService: ResourceNeedService,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(ResourceNeedController.name);
@@ -60,6 +62,12 @@ export class ResourceNeedController {
     this.logger.log(ctx, `${this.create.name} was called`);
 
     const need = await this.resourceNeedService.create(dto);
+    await this.auditLogService.create(
+      'CREATE',
+      'ResourceNeed',
+      `Resource need created: ${need.getNeedID()}`,
+      ctx.user?.id || 0,
+    );
     return { data: need, meta: {} };
   }
 
@@ -154,6 +162,12 @@ export class ResourceNeedController {
       id,
       dto.status as any,
     );
+    await this.auditLogService.create(
+      'UPDATE',
+      'ResourceNeed',
+      `Resource need status updated to ${dto.status}: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: need, meta: {} };
   }
 
@@ -177,6 +191,12 @@ export class ResourceNeedController {
     this.logger.log(ctx, `${this.approve.name} was called`);
 
     const need = await this.resourceNeedService.approve(id);
+    await this.auditLogService.create(
+      'UPDATE',
+      'ResourceNeed',
+      `Resource need approved: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: need, meta: {} };
   }
 
@@ -254,5 +274,11 @@ export class ResourceNeedController {
     }
 
     await this.resourceNeedService.delete(id);
+    await this.auditLogService.create(
+      'DELETE',
+      'ResourceNeed',
+      `Resource need deleted: ${id}`,
+      ctx.user?.id || 0,
+    );
   }
 }

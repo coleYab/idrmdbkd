@@ -9,6 +9,7 @@ import {
   Put,
 } from '@nestjs/common';
 
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { CreateModuleDto } from '../../../application/dto/create-module.dto';
 import { CreateModuleUseCase } from '../../../application/use-cases/create-module/create-module.use-case';
 import { Module } from '../../../domain/entities/module.entity';
@@ -21,13 +22,21 @@ import {
 export class ModuleController {
   constructor(
     private readonly createModuleUseCase: CreateModuleUseCase,
+    private readonly auditLogService: AuditLogService,
     @Inject(MODULE_REPOSITORY)
     private readonly moduleRepository: ModuleRepository,
   ) {}
 
   @Post()
   async create(@Body() dto: CreateModuleDto): Promise<Module> {
-    return this.createModuleUseCase.execute(dto);
+    const module = await this.createModuleUseCase.execute(dto);
+    await this.auditLogService.create(
+      'CREATE',
+      'Module',
+      `Module created: ${module.getId()}`,
+      0,
+    );
+    return module;
   }
 
   @Get(':id')
@@ -36,6 +45,12 @@ export class ModuleController {
     if (!module) {
       throw new Error('Module not found');
     }
+    await this.auditLogService.create(
+      'READ',
+      'Module',
+      `Module read: ${id}`,
+      0,
+    );
     return module;
   }
 
@@ -53,11 +68,23 @@ export class ModuleController {
     }
 
     await this.moduleRepository.update(dto);
+    await this.auditLogService.create(
+      'UPDATE',
+      'Module',
+      `Module updated: ${id}`,
+      0,
+    );
     return module;
   }
 
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     await this.moduleRepository.delete(id);
+    await this.auditLogService.create(
+      'DELETE',
+      'Module',
+      `Module deleted: ${id}`,
+      0,
+    );
   }
 }

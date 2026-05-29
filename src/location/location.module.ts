@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuditLogModule } from '../audit-log/audit-log.module';
 import { SharedModule } from '../shared/shared.module';
 import { LocationService } from './application/services/location.service';
 import { CreateLocationUseCase } from './application/use-cases/create/create-location.use-case';
@@ -12,7 +13,7 @@ import { LocationTypeOrmEntity } from './infrastructure/persistence/typeorm/loca
 import { LocationController } from './interfaces/http/controllers/location.controller';
 
 @Module({
-  imports: [SharedModule, TypeOrmModule.forFeature([LocationTypeOrmEntity])],
+  imports: [SharedModule, AuditLogModule, TypeOrmModule.forFeature([LocationTypeOrmEntity])],
   controllers: [LocationController],
   providers: [
     CreateLocationUseCase,

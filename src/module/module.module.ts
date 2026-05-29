@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AuditLogModule } from '../audit-log/audit-log.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { CreateModuleUseCase } from './application/use-cases/create-module/create-module.use-case';
@@ -8,7 +9,7 @@ import { ModuleTypeOrmEntity } from './infrastructure/persistence/typeorm/module
 import { ModuleController } from './interfaces/http/controllers/module.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ModuleTypeOrmEntity])],
+  imports: [AuditLogModule, TypeOrmModule.forFeature([ModuleTypeOrmEntity])],
   controllers: [ModuleController],
   providers: [
     CreateModuleUseCase,

@@ -22,6 +22,7 @@ import {
   BaseApiResponse,
   SwaggerBaseApiResponse,
 } from '../../../../shared/dtos/base-api-response.dto';
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
@@ -37,6 +38,7 @@ import { ResourceNeedService } from '../../../application/services/resource-need
 export class ResourceController {
   constructor(
     private readonly resourceService: ResourceService,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
     private readonly inventoryService: InventoryItemsService,
     private readonly resourceNeedService: ResourceNeedService,
@@ -72,6 +74,12 @@ export class ResourceController {
       new Date(),
     );
     await this.resourceService.create(resource);
+    await this.auditLogService.create(
+      'CREATE',
+      'Resource',
+      `Resource created: ${dto.name}`,
+      ctx.user?.id || 0,
+    );
     return { data: resource, meta: {} };
   }
 
@@ -180,6 +188,13 @@ export class ResourceController {
       await this.resourceService.update(resource);
     }
 
+    await this.auditLogService.create(
+      'UPDATE',
+      'Resource',
+      `Resource updated: ${id}`,
+      ctx.user?.id || 0,
+    );
+
     return { data: resource, meta: {} };
   }
 
@@ -207,6 +222,12 @@ export class ResourceController {
     }
 
     await this.resourceService.delete(id);
+    await this.auditLogService.create(
+      'DELETE',
+      'Resource',
+      `Resource deleted: ${id}`,
+      ctx.user?.id || 0,
+    );
   }
 
   @Get('map')

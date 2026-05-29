@@ -26,6 +26,7 @@ import {
   BaseApiResponse,
   SwaggerBaseApiResponse,
 } from '../../../../shared/dtos/base-api-response.dto';
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
@@ -45,6 +46,7 @@ export class DisasterController {
     private readonly createDisasterFromIncidentUseCase: CreateDisasterFromIncidentUseCase,
     private readonly updateDisasterUseCase: UpdateDisasterUseCase,
     private readonly disasterService: DisasterService,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(DisasterController.name);
@@ -71,8 +73,14 @@ export class DisasterController {
     this.logger.log(ctx, `${this.create.name} was called`);
 
     const disaster = await this.createDisasterUseCase.execute(
-      ctx.user?.id.toString() || uuidv4(), // Use user ID from context if available, otherwise generate a new UUID
+      ctx.user?.id.toString() || uuidv4(),
       dto,
+    );
+    await this.auditLogService.create(
+      'CREATE',
+      'Disaster',
+      `Disaster created: ${disaster.getId()}`,
+      ctx.user?.id || 0,
     );
     return { data: disaster, meta: {} };
   }
@@ -102,6 +110,13 @@ export class DisasterController {
       throw new NotFoundException('Disaster not found');
     }
 
+    await this.auditLogService.create(
+      'READ',
+      'Disaster',
+      `Disaster read: ${id}`,
+      ctx.user?.id || 0,
+    );
+
     return { data: disaster, meta: {} };
   }
 
@@ -120,6 +135,12 @@ export class DisasterController {
     this.logger.log(ctx, `${this.findAll.name} was called`);
 
     const incidents = await this.disasterService.findAll();
+    await this.auditLogService.create(
+      'READ',
+      'Disaster',
+      'Disasters list read',
+      ctx.user?.id || 0,
+    );
     return { data: incidents, meta: {} };
   }
 
@@ -150,6 +171,12 @@ export class DisasterController {
     this.logger.log(ctx, `${this.update.name} was called`);
 
     const disaster = await this.updateDisasterUseCase.execute(id, dto);
+    await this.auditLogService.create(
+      'UPDATE',
+      'Disaster',
+      `Disaster updated: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: disaster, meta: {} };
   }
 
@@ -176,6 +203,12 @@ export class DisasterController {
       userId,
       id,
     );
+    await this.auditLogService.create(
+      'CREATE',
+      'Disaster',
+      `Disaster created from incident ${id}: ${disaster.getId()}`,
+      ctx.user?.id || 0,
+    );
     return { data: disaster, meta: {} };
   }
 
@@ -199,6 +232,12 @@ export class DisasterController {
   ): Promise<BaseApiResponse<void>> {
     this.logger.log(ctx, `${this.delete.name} was called`);
     await this.disasterService.delete(id);
+    await this.auditLogService.create(
+      'DELETE',
+      'Disaster',
+      `Disaster deleted: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: undefined, meta: {} };
   }
 }

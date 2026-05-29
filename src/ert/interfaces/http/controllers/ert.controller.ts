@@ -17,6 +17,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
@@ -28,6 +29,7 @@ import { ErtUnit } from '../../../domain/entities/ert-unit.entity';
 export class ErtController {
   constructor(
     private readonly service: ErtService,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(ErtController.name);
@@ -49,6 +51,12 @@ export class ErtController {
   ) {
     if (!body.name) throw new BadRequestException('name is required');
     const unit = await this.service.create(body);
+    await this.auditLogService.create(
+      'CREATE',
+      'ERTUnit',
+      `ERT unit created: ${unit.getUnitID()}`,
+      ctx.user?.id || 0,
+    );
     return { data: unit, meta: {} };
   }
 
@@ -63,6 +71,12 @@ export class ErtController {
     const units = region
       ? await this.service.findByRegion(region)
       : await this.service.findAll();
+    await this.auditLogService.create(
+      'READ',
+      'ERTUnit',
+      'ERT units list read',
+      ctx.user?.id || 0,
+    );
     return { data: units, meta: {} };
   }
 
@@ -74,6 +88,12 @@ export class ErtController {
   ) {
     const unit = await this.service.findOne(id);
     if (!unit) throw new NotFoundException('ERT unit not found');
+    await this.auditLogService.create(
+      'READ',
+      'ERTUnit',
+      `ERT unit read: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: unit, meta: {} };
   }
 
@@ -90,6 +110,12 @@ export class ErtController {
       body.latitude,
       body.longitude,
     );
+    await this.auditLogService.create(
+      'UPDATE',
+      'ERTUnit',
+      `ERT unit location updated: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: unit, meta: {} };
   }
 
@@ -101,6 +127,12 @@ export class ErtController {
   ) {
     if (!body.status) throw new BadRequestException('status is required');
     const unit = await this.service.updateStatus(id, body.status);
+    await this.auditLogService.create(
+      'UPDATE',
+      'ERTUnit',
+      `ERT unit status updated to ${body.status}: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: unit, meta: {} };
   }
 
@@ -108,5 +140,11 @@ export class ErtController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@ReqContext() ctx: RequestContext, @Param('id') id: string) {
     await this.service.delete(id);
+    await this.auditLogService.create(
+      'DELETE',
+      'ERTUnit',
+      `ERT unit deleted: ${id}`,
+      ctx.user?.id || 0,
+    );
   }
 }

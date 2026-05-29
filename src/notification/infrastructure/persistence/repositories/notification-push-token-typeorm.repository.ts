@@ -20,7 +20,9 @@ export class NotificationPushTokenTypeOrmRepository implements NotificationPushT
     return this.repository.findOne({ where: { key } });
   }
 
-  async findByPushToken(pushToken: string): Promise<NotificationPushToken | null> {
+  async findByPushToken(
+    pushToken: string,
+  ): Promise<NotificationPushToken | null> {
     return this.repository.findOne({ where: { pushToken } });
   }
 

@@ -28,6 +28,7 @@ import {
   SwaggerBaseApiResponse,
 } from '../../../../shared/dtos/base-api-response.dto';
 import { PaginationParamsDto } from '../../../../shared/dtos/pagination-params.dto';
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
@@ -53,6 +54,7 @@ export class CommentWithAuthorOutputDto {
 export class CommentController {
   constructor(
     private readonly commentService: CommentService,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(CommentController.name);
@@ -80,6 +82,12 @@ export class CommentController {
       ctx.user?.id.toString() || uuidv4(),
       dto,
     );
+    await this.auditLogService.create(
+      'CREATE',
+      'Comment',
+      `Comment created on disaster ${dto.disasterId}`,
+      ctx.user?.id || 0,
+    );
     return { data: comment, meta: {} };
   }
 
@@ -106,6 +114,13 @@ export class CommentController {
       throw new NotFoundException('Comment not found');
     }
 
+    await this.auditLogService.create(
+      'READ',
+      'Comment',
+      `Comment read: ${id}`,
+      ctx.user?.id || 0,
+    );
+
     return { data: comment, meta: {} };
   }
 
@@ -127,6 +142,12 @@ export class CommentController {
     this.logger.log(ctx, `${this.findAll.name} was called`);
     const { limit, offset } = query;
     const result = await this.commentService.findAllPaginated(limit, offset);
+    await this.auditLogService.create(
+      'READ',
+      'Comment',
+      'Comments list read',
+      ctx.user?.id || 0,
+    );
     return {
       data: result.data.map((comment) => this.mapToOutput(comment)),
       meta: { total: result.total },
@@ -156,6 +177,12 @@ export class CommentController {
       disasterId,
       limit,
       offset,
+    );
+    await this.auditLogService.create(
+      'READ',
+      'Comment',
+      `Comments read for disaster ${disasterId}`,
+      ctx.user?.id || 0,
     );
     return {
       data: result.data.map((comment) => this.mapToOutput(comment)),
@@ -187,6 +214,12 @@ export class CommentController {
   ): Promise<BaseApiResponse<Comment>> {
     this.logger.log(ctx, `${this.update.name} was called`);
     const comment = await this.commentService.update(id, dto);
+    await this.auditLogService.create(
+      'UPDATE',
+      'Comment',
+      `Comment updated: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: comment, meta: {} };
   }
 
@@ -207,6 +240,12 @@ export class CommentController {
   ): Promise<BaseApiResponse<void>> {
     this.logger.log(ctx, `${this.delete.name} was called`);
     await this.commentService.delete(id);
+    await this.auditLogService.create(
+      'DELETE',
+      'Comment',
+      `Comment deleted: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: undefined, meta: {} };
   }
 

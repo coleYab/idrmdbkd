@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuditLogModule } from '../audit-log/audit-log.module';
 import { SharedModule } from '../shared/shared.module';
 import { NotificationPushToken } from './domain/entities/notification-push-token.entity';
 import { NotificationService } from './application/services/notification.service';
@@ -17,6 +18,7 @@ import { NotificationController } from './interfaces/http/controllers/notificati
 @Module({
   imports: [
     SharedModule,
+    AuditLogModule,
     TypeOrmModule.forFeature([
       NotificationTypeOrmEntity,
       NotificationPushToken,

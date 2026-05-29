@@ -21,6 +21,7 @@ import {
   BaseApiResponse,
   SwaggerBaseApiResponse,
 } from '../../../../shared/dtos/base-api-response.dto';
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
@@ -34,6 +35,7 @@ import { InventoryItems } from '../../../domain/entities/inventory-items.entity'
 export class InventoryController {
   constructor(
     private readonly inventoryService: InventoryItemsService,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(InventoryController.name);
@@ -59,6 +61,12 @@ export class InventoryController {
     this.logger.log(ctx, `${this.create.name} was called`);
 
     const item = await this.inventoryService.create(dto);
+    await this.auditLogService.create(
+      'CREATE',
+      'InventoryItem',
+      `Inventory item created: ${item.getItemID()}`,
+      ctx.user?.id || 0,
+    );
     return { data: item, meta: {} };
   }
 
@@ -159,6 +167,12 @@ export class InventoryController {
       id,
       dto.quantity,
     );
+    await this.auditLogService.create(
+      'UPDATE',
+      'InventoryItem',
+      `Inventory stock updated to ${dto.quantity}: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: updatedItem, meta: {} };
   }
 
@@ -234,5 +248,11 @@ export class InventoryController {
     }
 
     await this.inventoryService.delete(id);
+    await this.auditLogService.create(
+      'DELETE',
+      'InventoryItem',
+      `Inventory item deleted: ${id}`,
+      ctx.user?.id || 0,
+    );
   }
 }

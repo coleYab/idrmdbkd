@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuditLogModule } from '../audit-log/audit-log.module';
 import { SharedModule } from '../shared/shared.module';
 import { InventoryItemsService } from './application/services/inventory-items.service';
 import { ResourceService } from './application/services/resource.service';
@@ -24,6 +25,7 @@ import { ResourceNeedController } from './interfaces/http/controllers/resource-n
 @Module({
   imports: [
     SharedModule,
+    AuditLogModule,
     TypeOrmModule.forFeature([
       ResourceTypeOrmEntity,
       ResourceNeedTypeOrmEntity,

@@ -28,6 +28,7 @@ import {
   BaseApiResponse,
   SwaggerBaseApiResponse,
 } from '../../../../shared/dtos/base-api-response.dto';
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
@@ -48,6 +49,7 @@ export class DonationController {
   constructor(
     private readonly donationCampaignService: DonationCampaignService,
     private readonly donationTransactionService: DonationTransactionService,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(DonationController.name);
@@ -73,6 +75,12 @@ export class DonationController {
     this.logger.log(ctx, `${this.createCampaign.name} was called`);
 
     const campaign = await this.donationCampaignService.createCampaign(dto);
+    await this.auditLogService.create(
+      'CREATE',
+      'DonationCampaign',
+      `Donation campaign created: ${campaign.getCampaignID()}`,
+      ctx.user?.id || 0,
+    );
     return { data: CampaignResponse.fromDomain(campaign), meta: {} };
   }
 
@@ -97,6 +105,13 @@ export class DonationController {
 
     const [campaigns, total, page, limit] =
       await this.donationCampaignService.listCampaigns(query);
+
+    await this.auditLogService.create(
+      'READ',
+      'DonationCampaign',
+      'Campaigns list read',
+      ctx.user?.id || 0,
+    );
 
     return {
       data: campaigns.map((campaign) => CampaignResponse.fromDomain(campaign)),
@@ -126,6 +141,13 @@ export class DonationController {
     const campaign =
       await this.donationCampaignService.findCampaignById(campaignId);
 
+    await this.auditLogService.create(
+      'READ',
+      'DonationCampaign',
+      `Campaign read: ${campaignId}`,
+      ctx.user?.id || 0,
+    );
+
     return { data: CampaignResponse.fromDomain(campaign), meta: {} };
   }
 
@@ -148,6 +170,13 @@ export class DonationController {
     const campaign = await this.donationCampaignService.changeCampaignStatus(
       campaignId,
       dto,
+    );
+
+    await this.auditLogService.create(
+      'UPDATE',
+      'DonationCampaign',
+      `Campaign ${campaignId} status changed to ${dto.status}`,
+      ctx.user?.id || 0,
     );
 
     return { data: CampaignResponse.fromDomain(campaign), meta: {} };
@@ -180,6 +209,13 @@ export class DonationController {
       dto.idempotencyKey || idempotencyKeyHeader || '',
     );
 
+    await this.auditLogService.create(
+      'CREATE',
+      'Donation',
+      `Donation initialized: ${data.donationId}`,
+      ctx.user?.id || 0,
+    );
+
     return { data, meta: {} };
   }
 
@@ -207,6 +243,13 @@ export class DonationController {
       chapaSignature,
     );
 
+    await this.auditLogService.create(
+      'UPDATE',
+      'Donation',
+      `Chapa webhook processed for tx_ref: ${payload.tx_ref}`,
+      0,
+    );
+
     return { data: { received: true }, meta: {} };
   }
 
@@ -226,6 +269,12 @@ export class DonationController {
     this.logger.log(ctx, `${this.getDonationStatus.name} was called`);
     const data =
       await this.donationTransactionService.getDonationStatus(donationId);
+    await this.auditLogService.create(
+      'READ',
+      'Donation',
+      `Donation status read: ${donationId}`,
+      ctx.user?.id || 0,
+    );
     return { data, meta: {} };
   }
 
@@ -244,6 +293,13 @@ export class DonationController {
     const receipt = await this.donationTransactionService.generateReceipt(
       donationId,
       token,
+    );
+
+    await this.auditLogService.create(
+      'READ',
+      'Donation',
+      `Donation receipt downloaded: ${donationId}`,
+      ctx.user?.id || 0,
     );
 
     res.setHeader('Content-Type', 'application/pdf');

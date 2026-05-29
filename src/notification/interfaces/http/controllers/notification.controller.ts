@@ -20,6 +20,7 @@ import {
   BaseApiResponse,
   SwaggerBaseApiResponse,
 } from '../../../../shared/dtos/base-api-response.dto';
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
@@ -43,6 +44,7 @@ export class NotificationController {
     private readonly updateNotificationUseCase: UpdateNotificationUseCase,
     private readonly notificationService: NotificationService,
     private readonly pushNotificationService: PushNotificationService,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(NotificationController.name);
@@ -71,6 +73,12 @@ export class NotificationController {
       ctx.user?.id.toString() || uuidv4(),
       dto,
     );
+    await this.auditLogService.create(
+      'CREATE',
+      'Notification',
+      `Notification created: ${notification.getId()}`,
+      ctx.user?.id || 0,
+    );
     return { data: notification, meta: {} };
   }
 
@@ -98,6 +106,13 @@ export class NotificationController {
       dto.message,
     );
 
+    await this.auditLogService.create(
+      'CREATE',
+      'Notification',
+      `Notification broadcast: ${dto.title}`,
+      ctx.user?.id || 0,
+    );
+
     return { data: result, meta: {} };
   }
 
@@ -121,6 +136,12 @@ export class NotificationController {
     this.logger.log(ctx, `${this.savePushToken.name} was called`);
 
     const token = await this.pushNotificationService.savePushToken(dto);
+    await this.auditLogService.create(
+      'CREATE',
+      'PushToken',
+      `Push token saved for ${dto.clerkUserId || dto.email}`,
+      ctx.user?.id || 0,
+    );
     return { data: token, meta: {} };
   }
 
@@ -184,6 +205,12 @@ export class NotificationController {
   ): Promise<BaseApiResponse<Notification>> {
     this.logger.log(ctx, `${this.update.name} was called`);
     const notification = await this.updateNotificationUseCase.execute(id, dto);
+    await this.auditLogService.create(
+      'UPDATE',
+      'Notification',
+      `Notification updated: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: notification, meta: {} };
   }
 
@@ -201,5 +228,11 @@ export class NotificationController {
   ): Promise<void> {
     this.logger.log(ctx, `${this.delete.name} was called`);
     await this.notificationService.delete(id);
+    await this.auditLogService.create(
+      'DELETE',
+      'Notification',
+      `Notification deleted: ${id}`,
+      ctx.user?.id || 0,
+    );
   }
 }

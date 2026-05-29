@@ -26,6 +26,7 @@ import {
   BaseApiResponse,
   SwaggerBaseApiResponse,
 } from '../../../../shared/dtos/base-api-response.dto';
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
@@ -46,6 +47,7 @@ export class IncidentController {
     private readonly createIncidentUseCase: CreateIncidentUseCase,
     private readonly updateIncidentUseCase: UpdateIncidentUseCase,
     private readonly incidentService: IncidentService,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(IncidentController.name);
@@ -77,8 +79,14 @@ export class IncidentController {
     this.logger.log(ctx, `${this.create.name} was called`);
 
     const incident = await this.createIncidentUseCase.execute(
-      ctx.user?.id.toString() || uuidv4(), // Use user ID from context if available, otherwise generate a new UUID
+      ctx.user?.id.toString() || uuidv4(),
       dto,
+    );
+    await this.auditLogService.create(
+      'CREATE',
+      'Incident',
+      `Incident created: ${incident.getId()}`,
+      ctx.user?.id || 0,
     );
     return { data: incident, meta: {} };
   }
@@ -117,6 +125,13 @@ export class IncidentController {
       throw new NotFoundException('Incident not found');
     }
 
+    await this.auditLogService.create(
+      'READ',
+      'Incident',
+      `Incident read: ${id}`,
+      ctx.user?.id || 0,
+    );
+
     return { data: incident, meta: {} };
   }
 
@@ -140,6 +155,12 @@ export class IncidentController {
     this.logger.log(ctx, `${this.findAll.name} was called`);
 
     const incidents = await this.incidentService.findAll();
+    await this.auditLogService.create(
+      'READ',
+      'Incident',
+      'Incidents list read',
+      ctx.user?.id || 0,
+    );
     return { data: incidents, meta: {} };
   }
 
@@ -179,6 +200,12 @@ export class IncidentController {
     this.logger.log(ctx, `${this.update.name} was called`);
 
     const incident = await this.updateIncidentUseCase.execute(id, dto);
+    await this.auditLogService.create(
+      'UPDATE',
+      'Incident',
+      `Incident updated: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: incident, meta: {} };
   }
 
@@ -210,6 +237,12 @@ export class IncidentController {
   ): Promise<void> {
     this.logger.log(ctx, `${this.delete.name} was called`);
     await this.incidentService.delete(id);
+    await this.auditLogService.create(
+      'DELETE',
+      'Incident',
+      `Incident deleted: ${id}`,
+      ctx.user?.id || 0,
+    );
   }
 
   @Put(':id/resolve')
@@ -245,10 +278,17 @@ export class IncidentController {
     @Param('id') id: string,
     @Body() dto: UpdateIncidentStatus,
   ): Promise<Incident> {
-    return this.incidentService.resolve(
+    const incident = await this.incidentService.resolve(
       id,
       ctx.user?.id.toString() || uuidv4(),
       dto.status,
     );
+    await this.auditLogService.create(
+      'UPDATE',
+      'Incident',
+      `Incident resolved to ${dto.status}: ${id}`,
+      ctx.user?.id || 0,
+    );
+    return incident;
   }
 }

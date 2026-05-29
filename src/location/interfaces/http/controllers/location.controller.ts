@@ -20,6 +20,7 @@ import {
   BaseApiResponse,
   SwaggerBaseApiResponse,
 } from '../../../../shared/dtos/base-api-response.dto';
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
@@ -39,6 +40,7 @@ export class LocationController {
     private readonly createLocationCampaignUseCase: CreateLocationCampaignUseCase,
     private readonly updateLocationUseCase: UpdateLocationUseCase,
     private readonly locationService: LocationService,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(LocationController.name);
@@ -67,6 +69,12 @@ export class LocationController {
       ctx.user?.id.toString() || uuidv4(),
       dto,
     );
+    await this.auditLogService.create(
+      'CREATE',
+      'Location',
+      `Location created: ${location.getId()}`,
+      ctx.user?.id || 0,
+    );
     return { data: location, meta: {} };
   }
 
@@ -94,6 +102,13 @@ export class LocationController {
       throw new NotFoundException('Location not found');
     }
 
+    await this.auditLogService.create(
+      'READ',
+      'Location',
+      `Location read: ${id}`,
+      ctx.user?.id || 0,
+    );
+
     return { data: location, meta: {} };
   }
 
@@ -111,6 +126,12 @@ export class LocationController {
   ): Promise<BaseApiResponse<Location[]>> {
     this.logger.log(ctx, `${this.findAll.name} was called`);
     const locations = await this.locationService.findAll();
+    await this.auditLogService.create(
+      'READ',
+      'Location',
+      'Locations list read',
+      ctx.user?.id || 0,
+    );
     return { data: locations, meta: {} };
   }
 
@@ -130,6 +151,12 @@ export class LocationController {
   ): Promise<BaseApiResponse<Location>> {
     this.logger.log(ctx, `${this.update.name} was called`);
     const location = await this.updateLocationUseCase.execute(id, dto);
+    await this.auditLogService.create(
+      'UPDATE',
+      'Location',
+      `Location updated: ${id}`,
+      ctx.user?.id || 0,
+    );
     return { data: location, meta: {} };
   }
 
@@ -147,5 +174,11 @@ export class LocationController {
   ): Promise<void> {
     this.logger.log(ctx, `${this.delete.name} was called`);
     await this.locationService.delete(id);
+    await this.auditLogService.create(
+      'DELETE',
+      'Location',
+      `Location deleted: ${id}`,
+      ctx.user?.id || 0,
+    );
   }
 }

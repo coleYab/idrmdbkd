@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { plainToClass } from 'class-transformer';
 
+import { AuditLogService } from '../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { UserOutput } from '../../user/dtos/user-output.dto';
@@ -21,6 +22,7 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private readonly auditLogService: AuditLogService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(AuthService.name);
@@ -65,6 +67,12 @@ export class AuthService {
     input.isAccountDisabled = false;
 
     const registeredUser = await this.userService.createUser(ctx, input);
+    await this.auditLogService.create(
+      'CREATE',
+      'User',
+      `User registered: ${input.username}`,
+      registeredUser.id,
+    );
     return plainToClass(RegisterOutput, registeredUser, {
       excludeExtraneousValues: true,
     });

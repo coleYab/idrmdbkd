@@ -15,6 +15,7 @@ import { Request, Response } from 'express';
 import { existsSync, mkdirSync, renameSync } from 'fs';
 import { basename, extname, join } from 'path';
 
+import { AuditLogService } from '../audit-log/services/audit-log.service';
 import { UploadService } from './upload.service';
 
 type UploadResponse = {
@@ -36,7 +37,10 @@ if (!existsSync(uploadsPath)) {
 
 @Controller('uploads')
 export class UploadController {
-  constructor(private readonly uploadService: UploadService) {}
+  constructor(
+    private readonly uploadService: UploadService,
+    private readonly auditLogService: AuditLogService,
+  ) {}
 
   @Post()
   @UseInterceptors(
@@ -44,20 +48,27 @@ export class UploadController {
       dest: uploadsPath,
     }),
   )
-  public uploadFile(
+  public async uploadFile(
     @UploadedFile() file: { filename: string } | undefined,
     @Req() request: Request,
-  ): UploadResponse {
+  ): Promise<UploadResponse> {
     if (!file) {
       throw new BadRequestException(
         'No file uploaded. Use form-data with key "file".',
       );
     }
 
-    return {
+    const result = {
       fileName: file.filename,
       url: this.uploadService.buildFileUrl(request, file.filename),
     };
+    await this.auditLogService.create(
+      'CREATE',
+      'Upload',
+      `File uploaded: ${file.filename}`,
+      0,
+    );
+    return result;
   }
 
   @Post('image')
@@ -66,10 +77,10 @@ export class UploadController {
       dest: uploadsPath,
     }),
   )
-  public uploadImage(
+  public async uploadImage(
     @UploadedFile() file: UploadedFileLike | undefined,
     @Req() request: Request,
-  ): UploadResponse {
+  ): Promise<UploadResponse> {
     if (!file) {
       throw new BadRequestException(
         'No image uploaded. Use form-data with key "file".',
@@ -90,10 +101,17 @@ export class UploadController {
       join(uploadsPath, storedFileName),
     );
 
-    return {
+    const result = {
       fileName: storedFileName,
       url: this.uploadService.buildImageUrl(request, storedFileName),
     };
+    await this.auditLogService.create(
+      'CREATE',
+      'Upload',
+      `Image uploaded: ${storedFileName}`,
+      0,
+    );
+    return result;
   }
 
   @Get('image/:fileName')
