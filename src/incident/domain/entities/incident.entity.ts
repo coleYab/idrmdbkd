@@ -87,15 +87,11 @@ export class Incident extends AggregateRoot {
     this.apply(new IncidentUpdatedEvent(this));
   }
 
-  public reject(rejectedBy: string): void {
-    if (this.status !== IncidentStatus.ACTIVE) {
-      throw new Error('Only active incidents can be rejected');
-    }
-
+  public reject(rejectedBy: string, status: IncidentStatus): void {
     this.resolvedBy = rejectedBy;
     this.resolvedAt = new Date();
     this.updatedAt = new Date();
-    this.updateStatus(IncidentStatus.REJECTED);
+    this.updateStatus(status);
   }
 
   public approve(resolvedBy: string): void {

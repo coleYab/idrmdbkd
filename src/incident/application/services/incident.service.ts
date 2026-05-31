@@ -18,6 +18,10 @@ export class IncidentService {
     return this.incidentRepository.findAll();
   }
 
+  public async findByStatus(status: IncidentStatus) {
+    return this.incidentRepository.findByStatus(status);
+  }
+
   public async findOne(id: string) {
     return this.incidentRepository.findById(id);
   }
@@ -32,15 +36,17 @@ export class IncidentService {
       throw new Error('Incident not found');
     }
 
-    if (status === IncidentStatus.VERIFIED) {
+    if (status === IncidentStatus.ACTIVE) {
       return this.approve(id, userId);
     }
 
-    if (status === IncidentStatus.ACTIVE || status === IncidentStatus.PENDING) {
-      throw new Error('Incident status must be rejection status if it is not a verification status');
+    if (status === IncidentStatus.PENDING) {
+      throw new Error(
+        'Incident status must be rejection status if it is not a verification status',
+      );
     }
 
-    incident.reject(userId);
+    incident.reject(userId, status);
     await this.incidentRepository.save(incident);
 
     return incident;

@@ -8,14 +8,17 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  ParseEnumPipe,
   Post,
   Put,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -28,6 +31,7 @@ import {
 } from '../../../../shared/dtos/base-api-response.dto';
 import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
+import { IncidentStatus } from '../../../../shared/enums/incident.enums';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
 import { ReportIncidentDto } from '../../../application/dto/create-incident.dto';
@@ -141,6 +145,12 @@ export class IncidentController {
     summary: 'Get incidents list API',
     description: 'Fetches all incidents.',
   })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: IncidentStatus,
+    description: 'Filter incidents by status',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse([Incident]),
@@ -151,10 +161,14 @@ export class IncidentController {
   })
   async findAll(
     @ReqContext() ctx: RequestContext,
+    @Query('status', new ParseEnumPipe(IncidentStatus, { optional: true }))
+    status?: IncidentStatus,
   ): Promise<BaseApiResponse<Incident[]>> {
     this.logger.log(ctx, `${this.findAll.name} was called`);
 
-    const incidents = await this.incidentService.findAll();
+    const incidents = status
+      ? await this.incidentService.findByStatus(status)
+      : await this.incidentService.findAll();
     await this.auditLogService.create(
       'READ',
       'Incident',

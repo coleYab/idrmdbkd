@@ -22,7 +22,7 @@ export class CreateIncidentUseCase {
       dto.title,
       dto.description,
       dto.incidentType,
-      IncidentStatus.ACTIVE,
+      IncidentStatus.PENDING,
       dto.severity,
       dto.location,
       dto.attachments,

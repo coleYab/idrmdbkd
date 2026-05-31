@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 
 import { Incident } from '../../../domain/entities/incident.entity';
 import { IncidentRepository } from '../../../domain/repositories/incident.repository';
+import { IncidentStatus } from '../../../../shared/enums/incident.enums';
 import { IncidentTypeOrmEntity } from '../typeorm/incident-typeorm.entity';
 
 @Injectable()
@@ -40,6 +41,32 @@ export class IncidentTypeOrmRepository implements IncidentRepository {
 
   async findAll(): Promise<Incident[]> {
     const entities = await this.repository.find();
+    return entities.map(
+      (entity) =>
+        new Incident(
+          entity.id,
+          entity.title,
+          entity.description,
+          entity.incidentType,
+          entity.status,
+          entity.severity,
+          entity.location,
+          entity.attachments,
+          entity.affectedPopulationCount,
+          entity.requiresUrgentMedical,
+          entity.infrastructureDamage,
+          entity.reportedBy,
+          entity.createdAt,
+          entity.updatedAt,
+          entity.resolvedBy,
+          entity.resolvedAt,
+        ),
+    );
+  }
+
+  async findByStatus(status: IncidentStatus): Promise<Incident[]> {
+    const entities = await this.repository.find({ where: { status } });
+
     return entities.map(
       (entity) =>
         new Incident(
