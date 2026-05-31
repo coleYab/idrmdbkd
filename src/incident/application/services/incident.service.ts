@@ -18,8 +18,11 @@ export class IncidentService {
     return this.incidentRepository.findAll();
   }
 
-  public async findByStatus(status: IncidentStatus) {
-    return this.incidentRepository.findByStatus(status);
+  public async findByFilters(filter: {
+    statuses?: IncidentStatus[];
+    severities?: any[];
+  }) {
+    return this.incidentRepository.findByFilters(filter as any);
   }
 
   public async findOne(id: string) {

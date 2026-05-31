@@ -17,6 +17,10 @@ export class DisasterService {
     return this.incidentRepository.findAll();
   }
 
+  public async findByFilters(filter: { statuses?: any[]; severities?: any[] }): Promise<Disaster[]> {
+    return this.incidentRepository.findByFilters(filter as any);
+  }
+
   public async findOne(id: string): Promise<Disaster | null> {
     return this.incidentRepository.findById(id);
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 
 import { Disaster } from '../../../domain/entities/disaster.entity';
 import { DisasterRepository } from '../../../domain/repositories/disaster.repository';
@@ -42,6 +42,45 @@ export class DisasterTypeOrmRepository implements DisasterRepository {
 
   async findAll(): Promise<Disaster[]> {
     const entities = await this.repository.find();
+    return entities.map(
+      (entity) =>
+        new Disaster(
+          entity.id,
+          entity.title,
+          entity.description,
+          entity.type,
+          entity.status,
+          entity.severity,
+          entity.location,
+          entity.totalAffectedPopulation,
+          entity.requiresUrgentMedical,
+          entity.infrastructureDamage,
+          entity.attachments,
+          entity.estimatedEconomicLoss,
+          entity.budgetAllocated,
+          entity.declaredBy,
+          entity.linkedIncidentIds,
+          entity.createdAt,
+          entity.updatedAt,
+          entity.activatedAt,
+          entity.closedAt,
+        ),
+    );
+  }
+
+  async findByFilters(filter: {
+    statuses?: any[];
+    severities?: any[];
+  }): Promise<Disaster[]> {
+    const where: any = {};
+    if (filter.statuses && filter.statuses.length > 0) {
+      where.status = In(filter.statuses as any);
+    }
+    if (filter.severities && filter.severities.length > 0) {
+      where.severity = In(filter.severities as any);
+    }
+
+    const entities = await this.repository.find({ where });
     return entities.map(
       (entity) =>
         new Disaster(

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 
 import { Incident } from '../../../domain/entities/incident.entity';
 import { IncidentRepository } from '../../../domain/repositories/incident.repository';
@@ -64,9 +64,19 @@ export class IncidentTypeOrmRepository implements IncidentRepository {
     );
   }
 
-  async findByStatus(status: IncidentStatus): Promise<Incident[]> {
-    const entities = await this.repository.find({ where: { status } });
+  async findByFilters(filter: {
+    statuses?: IncidentStatus[];
+    severities?: typeof Incident.prototype['severity'][];
+  }): Promise<Incident[]> {
+    const where: any = {};
+    if (filter.statuses && filter.statuses.length > 0) {
+      where.status = In(filter.statuses as any);
+    }
+    if (filter.severities && filter.severities.length > 0) {
+      where.severity = In(filter.severities as any);
+    }
 
+    const entities = await this.repository.find({ where });
     return entities.map(
       (entity) =>
         new Incident(

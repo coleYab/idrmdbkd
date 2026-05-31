@@ -11,11 +11,14 @@ import {
   Post,
   Put,
   UseInterceptors,
+  Query,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -37,6 +40,8 @@ import { CreateDisasterUseCase } from '../../../application/use-cases/create/cre
 import { CreateDisasterFromIncidentUseCase } from '../../../application/use-cases/create/create-disaster-from-incident.use-case';
 import { UpdateDisasterUseCase } from '../../../application/use-cases/update/update-disaster.use-case';
 import { Disaster } from '../../../domain/entities/disaster.entity';
+import { DisasterStatus, DisasterSeverityLevel } from '../../../../shared/enums/disaster.enums';
+
 
 @ApiTags('disasters')
 @Controller('disasters')
@@ -125,23 +130,41 @@ export class DisasterController {
   @ApiOperation({
     summary: 'Get incidents list API',
   })
+  @ApiQuery({ name: 'status', required: false, description: 'Filter disasters by comma-separated status values' })
+  @ApiQuery({ name: 'severity', required: false, description: 'Filter disasters by comma-separated severity values' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse([Disaster]),
   })
   async findAll(
     @ReqContext() ctx: RequestContext,
+    @Query('status') status?: string,
+    @Query('severity') severity?: string,
   ): Promise<BaseApiResponse<Disaster[]>> {
     this.logger.log(ctx, `${this.findAll.name} was called`);
 
-    const incidents = await this.disasterService.findAll();
-    await this.auditLogService.create(
-      'READ',
-      'Disaster',
-      'Disasters list read',
-      ctx.user?.id || 0,
-    );
-    return { data: incidents, meta: {} };
+    const parsedStatuses = status
+      ? status.split(',').map((s) => s.trim()).filter(Boolean)
+      : undefined;
+    const parsedSeverities = severity
+      ? severity.split(',').map((s) => s.trim()).filter(Boolean)
+      : undefined;
+
+    if (parsedStatuses) {
+      const invalid = parsedStatuses.filter((s) => !Object.values(DisasterStatus).includes(s as any));
+      if (invalid.length) throw new BadRequestException(`Invalid status value(s): ${invalid.join(',')}`);
+    }
+    if (parsedSeverities) {
+      const invalid = parsedSeverities.filter((s) => !Object.values(DisasterSeverityLevel).includes(s as any));
+      if (invalid.length) throw new BadRequestException(`Invalid severity value(s): ${invalid.join(',')}`);
+    }
+
+    const disasters = parsedStatuses || parsedSeverities
+      ? await this.disasterService.findByFilters({ statuses: (parsedStatuses as unknown) as any[], severities: (parsedSeverities as unknown) as any[] })
+      : await this.disasterService.findAll();
+
+    await this.auditLogService.create('READ', 'Disaster', 'Disasters list read', ctx.user?.id || 0);
+    return { data: disasters, meta: {} };
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
