@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
+import { DisasterStatus } from '../../../shared/enums/disaster.enums';
 import { IncidentStatus } from '../../../shared/enums/incident.enums';
 
 export class UpdateDisasterDto {
@@ -34,4 +35,15 @@ export class UpdateIncidentStatus {
   @IsNotEmpty()
   @IsEnum(IncidentStatus)
   status: IncidentStatus;
+}
+
+export class UpdateDisasterStatus {
+  @ApiProperty({
+    description: 'New disaster status',
+    enum: DisasterStatus,
+    example: DisasterStatus.RESOLVED,
+  })
+  @IsNotEmpty()
+  @IsEnum(DisasterStatus)
+  status: DisasterStatus;
 }

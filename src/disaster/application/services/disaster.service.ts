@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
+import { DisasterStatus } from '../../../shared/enums/disaster.enums';
 import { Disaster } from '../../domain/entities/disaster.entity';
 import {
   DISASTER_REPOSITORY,
@@ -26,6 +27,22 @@ export class DisasterService {
 
   public async findOne(id: string): Promise<Disaster | null> {
     return this.incidentRepository.findById(id);
+  }
+
+  public async resolve(
+    id: string,
+    userId: string,
+    status: DisasterStatus,
+  ): Promise<Disaster> {
+    const disaster = await this.incidentRepository.findById(id);
+    if (!disaster) {
+      throw new Error('Disaster not found');
+    }
+
+    disaster.transitionStatus(status, userId);
+    await this.incidentRepository.save(disaster);
+
+    return disaster;
   }
 
   public async delete(id: string): Promise<void> {

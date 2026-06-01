@@ -38,7 +38,7 @@ import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
 import { CreateDisasterDto } from '../../../application/dto/create-disaster.dto';
-import { UpdateDisasterDto } from '../../../application/dto/update-disaster.dto';
+import { UpdateDisasterDto, UpdateDisasterStatus } from '../../../application/dto/update-disaster.dto';
 import { DisasterService } from '../../../application/services/disaster.service';
 import { CreateDisasterUseCase } from '../../../application/use-cases/create/create-disaster.use-case';
 import { CreateDisasterFromIncidentUseCase } from '../../../application/use-cases/create/create-disaster-from-incident.use-case';
@@ -266,6 +266,47 @@ export class DisasterController {
       'Disaster',
       `Disaster created from incident ${id}: ${disaster.getId()}`,
       ctx.appUser?.uuid || null,
+    );
+    return { data: disaster, meta: {} };
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Put(':id/resolve')
+  @ApiOperation({
+    summary: 'Resolve disaster API',
+    description: 'Updates the disaster status.',
+  })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ type: UpdateDisasterStatus })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(Disaster),
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  async resolve(
+    @ReqContext() ctx: RequestContext,
+    @Param('id') id: string,
+    @Body() dto: UpdateDisasterStatus,
+  ): Promise<BaseApiResponse<Disaster>> {
+    this.logger.log(ctx, `${this.resolve.name} was called`);
+
+    const disaster = await this.disasterService.resolve(
+      id,
+      ctx.appUser?.uuid || uuidv4(),
+      dto.status,
+    );
+    await this.auditLogService.create(
+      'UPDATE',
+      'Disaster',
+      `Disaster resolved to ${dto.status}: ${id}`,
+      ctx.appUser?.uuid ?? null,
     );
     return { data: disaster, meta: {} };
   }

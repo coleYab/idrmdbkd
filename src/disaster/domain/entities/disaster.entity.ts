@@ -79,8 +79,36 @@ export class Disaster extends AggregateRoot {
     this.closedAt = closedAt;
   }
 
+  private static readonly ALLOWED_TRANSITIONS: Record<DisasterStatus, DisasterStatus[]> = {
+    [DisasterStatus.ACTIVE]: [DisasterStatus.RESOLVED],
+    [DisasterStatus.RESOLVED]: [],
+    [DisasterStatus.PENDING]: [],
+    [DisasterStatus.VERIFIED]: [],
+    [DisasterStatus.REPEATED]: [],
+    [DisasterStatus.FALSE_ALARM]: [],
+    [DisasterStatus.REJECTED]: [],
+  };
+
   public getStatus(): DisasterStatus {
     return this.status;
+  }
+
+  public transitionStatus(newStatus: DisasterStatus, userId?: string): void {
+    const allowed = Disaster.ALLOWED_TRANSITIONS[this.status];
+    if (!allowed || !allowed.includes(newStatus)) {
+      throw new Error(
+        `Cannot transition disaster from ${this.status} to ${newStatus}`,
+      );
+    }
+
+    this.status = newStatus;
+    this.updatedAt = new Date();
+
+    if (newStatus === DisasterStatus.RESOLVED) {
+      this.closedAt = this.closedAt || new Date();
+    }
+
+    this.apply(new DisasterUpdatedEvent(this));
   }
 
   public getSeverity(): DisasterSeverityLevel {
