@@ -1,4 +1,5 @@
 import { UserAccessTokenClaims } from '../../auth/dtos/auth-token-output.dto';
+import { User } from '../../user/entities/user.entity';
 
 export class RequestContext {
   public requestID: string | undefined;
@@ -9,4 +10,7 @@ export class RequestContext {
 
   // TODO : Discuss with team if this import is acceptable or if we should move UserAccessTokenClaims to shared.
   public user: UserAccessTokenClaims | null;
+
+  // Full persisted local user entity resolved in auth middleware.
+  public appUser: User | null;
 }

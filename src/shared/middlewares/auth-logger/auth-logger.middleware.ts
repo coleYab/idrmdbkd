@@ -53,7 +53,10 @@ const syncClerkUser = async (
 
     const clerkUserId = verifiedToken.sub;
     if (!clerkUserId) {
-      console.log('Could not determine user id from Clerk token response', verifiedToken);
+      console.log(
+        'Could not determine user id from Clerk token response',
+        verifiedToken,
+      );
       return;
     }
 
@@ -61,7 +64,9 @@ const syncClerkUser = async (
     console.log('Clerk user data (SDK)', clerkUser);
 
     if (!userRepo) {
-      console.log('No UserRepository provided to AuthLoggerMiddleware; skipping DB sync');
+      console.log(
+        'No UserRepository provided to AuthLoggerMiddleware; skipping DB sync',
+      );
       return;
     }
 
@@ -75,8 +80,9 @@ const syncClerkUser = async (
         getClerkScalar((clerkUser as any).username) ||
         getClerkScalar((clerkUser as any).emailAddresses?.[0]?.emailAddress) ||
         clerkUserId;
-      const email =
-        getClerkScalar((clerkUser as any).emailAddresses?.[0]?.emailAddress);
+      const email = getClerkScalar(
+        (clerkUser as any).emailAddresses?.[0]?.emailAddress,
+      );
       const firstName = getClerkScalar((clerkUser as any).firstName);
       const fullName = getClerkScalar((clerkUser as any).fullName);
 
@@ -95,6 +101,13 @@ const syncClerkUser = async (
       console.log('Created local user for clerkId', clerkUserId);
     }
 
+    // Attach both forms so existing RequestContext + controllers keep working.
+    req.appUser = appUser;
+    req.user = {
+      id: appUser.id,
+      username: appUser.username,
+      roles: appUser.roles as any,
+    };
     req.userId = appUser.uuid;
   } catch (e) {
     console.log('Failed to fetch or sync Clerk user (SDK)', {

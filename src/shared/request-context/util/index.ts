@@ -17,12 +17,16 @@ export function createRequestContext(request: Request): RequestContext {
     ? request.header(FORWARDED_FOR_TOKEN_HEADER)
     : request.ip;
 
-  // If request.user does not exist, we explicitly set it to null.
-  ctx.user = request.user
-    ? plainToClass(UserAccessTokenClaims, request.user, {
-        excludeExtraneousValues: true,
-      })
-    : null;
+  // Prefer user attached by auth middleware and keep backward compatibility with passport.
+  if (request.user) {
+    ctx.user = plainToClass(UserAccessTokenClaims, request.user, {
+      excludeExtraneousValues: true,
+    });
+  } else {
+    ctx.user = null;
+  }
+
+  ctx.appUser = request.appUser ?? null;
 
   return ctx;
 }

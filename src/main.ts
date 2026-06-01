@@ -7,9 +7,7 @@ import { join } from 'path';
 
 import { AppModule } from './app.module';
 import { VALIDATION_PIPE_OPTIONS } from './shared/constants';
-import {
-  createAuthLoggerMiddleware,
-} from './shared/middlewares/auth-logger/auth-logger.middleware';
+import { createAuthLoggerMiddleware } from './shared/middlewares/auth-logger/auth-logger.middleware';
 import { RequestIdMiddleware } from './shared/middlewares/request-id/request-id.middleware';
 import { UserRepository } from './user/repositories/user.repository';
 
