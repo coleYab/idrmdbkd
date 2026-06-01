@@ -9,4 +9,5 @@ export interface NotificationPushTokenRepository {
   findByKey(key: string): Promise<NotificationPushToken | null>;
   findByPushToken(pushToken: string): Promise<NotificationPushToken | null>;
   save(token: NotificationPushToken): Promise<NotificationPushToken>;
+  deleteByPushToken(pushToken: string): Promise<void>;
 }

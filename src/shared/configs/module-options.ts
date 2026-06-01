@@ -45,5 +45,6 @@ export const configModuleOptions: ConfigModuleOptions = {
     CHAPA_WEBHOOK_SECRET: Joi.string().required(),
     CHAPA_CALLBACK_URL: Joi.string().uri().required(),
     CHAPA_RETURN_URL: Joi.string().uri().required(),
+    RESEND_API_KEY: Joi.string().required(),
   }),
 };

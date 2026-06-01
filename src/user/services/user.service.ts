@@ -64,6 +64,10 @@ export class UserService {
     });
   }
 
+  async getAllUsers(): Promise<User[]> {
+    return this.repository.find();
+  }
+
   async getUsers(
     ctx: RequestContext,
     limit: number,

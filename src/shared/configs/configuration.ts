@@ -28,6 +28,9 @@ export default (): any => ({
     ),
   },
   defaultAdminUserPassword: process.env.DEFAULT_ADMIN_USER_PASSWORD,
+  resend: {
+    apiKey: process.env.RESEND_API_KEY,
+  },
   chapa: {
     baseUrl: process.env.CHAPA_BASE_URL || 'https://api.chapa.co/v1',
     publicKey: process.env.CHAPA_PUBLIC_KEY,

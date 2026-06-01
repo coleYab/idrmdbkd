@@ -29,4 +29,8 @@ export class NotificationPushTokenTypeOrmRepository implements NotificationPushT
   async save(token: NotificationPushToken): Promise<NotificationPushToken> {
     return this.repository.save(token);
   }
+
+  async deleteByPushToken(pushToken: string): Promise<void> {
+    await this.repository.delete({ pushToken });
+  }
 }

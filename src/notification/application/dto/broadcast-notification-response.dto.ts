@@ -5,8 +5,14 @@ export class BroadcastNotificationResponseDto {
   totalUsers: number;
 
   @ApiProperty()
-  sentCount: number;
+  pushSentCount: number;
 
   @ApiProperty()
-  failedCount: number;
+  pushFailedCount: number;
+
+  @ApiProperty()
+  emailSentCount: number;
+
+  @ApiProperty()
+  emailFailedCount: number;
 }

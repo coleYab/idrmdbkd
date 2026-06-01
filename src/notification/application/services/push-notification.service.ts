@@ -1,19 +1,22 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { Expo, ExpoPushMessage } from 'expo-server-sdk';
+import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
+import { Expo, ExpoPushMessage, ExpoPushTicket } from 'expo-server-sdk';
 
 import { NotificationPushToken } from '../../domain/entities/notification-push-token.entity';
 import { NOTIFICATION_PUSH_TOKEN_REPOSITORY } from '../../domain/repositories/notification-push-token.repository';
 import { NotificationPushTokenRepository } from '../../domain/repositories/notification-push-token.repository';
 import { BroadcastNotificationResponseDto } from '../dto/broadcast-notification-response.dto';
 import { SavePushTokenDto } from '../dto/save-push-token.dto';
+import { EmailService } from './email.service';
 
 @Injectable()
 export class PushNotificationService {
   private readonly expo = new Expo();
+  private readonly logger = new Logger(PushNotificationService.name);
 
   constructor(
     @Inject(NOTIFICATION_PUSH_TOKEN_REPOSITORY)
     private readonly notificationPushTokenRepository: NotificationPushTokenRepository,
+    private readonly emailService: EmailService,
   ) {}
 
   async savePushToken(dto: SavePushTokenDto): Promise<NotificationPushToken> {
@@ -53,43 +56,68 @@ export class PushNotificationService {
     message: string,
   ): Promise<BroadcastNotificationResponseDto> {
     const tokens = await this.notificationPushTokenRepository.findAll();
+    this.logger.log(`Broadcast: ${tokens.length} tokens in DB`);
 
-    const messages = tokens
+    const validTokens = tokens
       .map((token: NotificationPushToken) => token.pushToken)
       .filter(
         (token): token is string =>
           Boolean(token) && Expo.isExpoPushToken(token),
-      )
-      .map<ExpoPushMessage>((token) => ({
-        to: token,
-        sound: 'default',
-        title,
-        body: message,
-        data: { title, message },
-      }));
+      );
+    this.logger.log(`Broadcast: ${validTokens.length} valid Expo tokens after filtering`);
 
-    let sentCount = 0;
-    let failedCount = 0;
+    const messages = validTokens.map<ExpoPushMessage>((token) => ({
+      to: token,
+      sound: 'default',
+      title,
+      body: message,
+      data: { title, message },
+    }));
+
+    let pushSentCount = 0;
+    let pushFailedCount = 0;
+    let removedCount = 0;
 
     for (const chunk of this.expo.chunkPushNotifications(messages)) {
       try {
         const tickets = await this.expo.sendPushNotificationsAsync(chunk);
-        for (const ticket of tickets) {
+
+        for (let i = 0; i < tickets.length; i++) {
+          const ticket = tickets[i];
+
           if (ticket.status === 'ok') {
-            sentCount += 1;
-          } else {
-            failedCount += 1;
+            pushSentCount += 1;
+            continue;
+          }
+
+          pushFailedCount += 1;
+
+          const failedToken = chunk[i]?.to;
+          if (typeof failedToken !== 'string') continue;
+          const errorCode = (ticket as ExpoPushTicket & { details?: { error?: string } }).details?.error;
+
+          if (errorCode && ['InvalidToken', 'DeviceNotRegistered'].includes(errorCode)) {
+            this.logger.warn(`Broadcast: removing ${errorCode} token from DB`);
+            await this.notificationPushTokenRepository.deleteByPushToken(failedToken);
+            removedCount += 1;
           }
         }
-      } catch {
-        failedCount += chunk.length;
+      } catch (error) {
+        this.logger.error(`Broadcast: chunk send failed - ${error}`);
+        pushFailedCount += chunk.length;
       }
     }
 
+    this.logger.log(`Broadcast: push sent=${pushSentCount} failed=${pushFailedCount} removed=${removedCount}`);
+
+    const emailResult = await this.emailService.sendBroadcastEmail(title, message);
+
     return {
       totalUsers: messages.length,
-      sentCount,
-      failedCount,
+      pushSentCount,
+      pushFailedCount,
+      emailSentCount: emailResult.sent,
+      emailFailedCount: emailResult.failed,
     };
   }
 }
