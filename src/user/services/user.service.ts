@@ -37,7 +37,7 @@ export class UserService {
       'CREATE',
       'User',
       `User created: ${input.username}`,
-      user.id,
+      String(user.id),
     );
 
     return plainToClass(UserOutput, user, {
@@ -68,7 +68,7 @@ export class UserService {
     ctx: RequestContext,
     limit: number,
     offset: number,
-  ): Promise<{ users: UserOutput[]; count: number }> {
+  ): Promise<{ users: User[]; count: number }> {
     this.logger.log(ctx, `${this.getUsers.name} was called`);
 
     this.logger.log(ctx, `calling ${UserRepository.name}.findAndCount`);
@@ -78,11 +78,7 @@ export class UserService {
       skip: offset,
     });
 
-    const usersOutput = plainToClass(UserOutput, users, {
-      excludeExtraneousValues: true,
-    });
-
-    return { users: usersOutput, count };
+    return { users, count };
   }
 
   async findById(ctx: RequestContext, id: number): Promise<UserOutput> {
@@ -96,7 +92,10 @@ export class UserService {
     });
   }
 
-  async getUserById(ctx: RequestContext, id: number): Promise<UserOutput> {
+  async getUserById(
+    ctx: RequestContext,
+    id: number | string,
+  ): Promise<UserOutput> {
     this.logger.log(ctx, `${this.getUserById.name} was called`);
 
     this.logger.log(ctx, `calling ${UserRepository.name}.getById`);
@@ -149,7 +148,7 @@ export class UserService {
       'UPDATE',
       'User',
       `User updated: userId=${userId}`,
-      userId,
+      String(userId),
     );
 
     return plainToClass(UserOutput, updatedUser, {

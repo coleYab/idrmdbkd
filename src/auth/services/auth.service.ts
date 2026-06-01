@@ -71,7 +71,7 @@ export class AuthService {
       'CREATE',
       'User',
       `User registered: ${input.username}`,
-      registeredUser.id,
+      String(registeredUser.id),
     );
     return plainToClass(RegisterOutput, registeredUser, {
       excludeExtraneousValues: true,

@@ -78,15 +78,12 @@ export class CommentController {
   ): Promise<BaseApiResponse<Comment>> {
     this.logger.log(ctx, `${this.create.name} was called`);
 
-    const comment = await this.commentService.create(
-      ctx.user?.id.toString() || uuidv4(),
-      dto,
-    );
+    const comment = await this.commentService.create(ctx.appUser?.uuid ?? '', dto);
     await this.auditLogService.create(
       'CREATE',
       'Comment',
       `Comment created on disaster ${dto.disasterId}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
     return { data: comment, meta: {} };
   }
@@ -118,7 +115,7 @@ export class CommentController {
       'READ',
       'Comment',
       `Comment read: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
 
     return { data: comment, meta: {} };
@@ -146,7 +143,7 @@ export class CommentController {
       'READ',
       'Comment',
       'Comments list read',
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
     return {
       data: result.data.map((comment) => this.mapToOutput(comment)),
@@ -182,7 +179,7 @@ export class CommentController {
       'READ',
       'Comment',
       `Comments read for disaster ${disasterId}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
     return {
       data: result.data.map((comment) => this.mapToOutput(comment)),
@@ -218,7 +215,7 @@ export class CommentController {
       'UPDATE',
       'Comment',
       `Comment updated: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
     return { data: comment, meta: {} };
   }
@@ -244,7 +241,7 @@ export class CommentController {
       'DELETE',
       'Comment',
       `Comment deleted: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
     return { data: undefined, meta: {} };
   }

@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('audit_logs')
 @Index(['actionType'])
@@ -18,8 +24,8 @@ export class AuditLog {
   @Column({ type: 'text' })
   details: string;
 
-  @Column()
-  performedBy: number;
+  @Column({ type: 'varchar', nullable: true, length: 100 })
+  performedBy: string | null;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   timestamp: Date;

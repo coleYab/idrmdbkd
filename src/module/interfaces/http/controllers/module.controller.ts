@@ -34,7 +34,7 @@ export class ModuleController {
       'CREATE',
       'Module',
       `Module created: ${module.getId()}`,
-      0,
+      null,
     );
     return module;
   }
@@ -49,7 +49,7 @@ export class ModuleController {
       'READ',
       'Module',
       `Module read: ${id}`,
-      0,
+      null,
     );
     return module;
   }
@@ -72,7 +72,7 @@ export class ModuleController {
       'UPDATE',
       'Module',
       `Module updated: ${id}`,
-      0,
+      null,
     );
     return module;
   }
@@ -84,7 +84,7 @@ export class ModuleController {
       'DELETE',
       'Module',
       `Module deleted: ${id}`,
-      0,
+      null,
     );
   }
 }

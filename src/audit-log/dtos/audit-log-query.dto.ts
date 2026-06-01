@@ -3,7 +3,9 @@ import { Transform } from 'class-transformer';
 import { IsDateString, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class AuditLogQueryDto {
-  @ApiPropertyOptional({ description: 'Filter by action type (e.g. CREATE, UPDATE, DELETE)' })
+  @ApiPropertyOptional({
+    description: 'Filter by action type (e.g. CREATE, UPDATE, DELETE)',
+  })
   @IsString()
   @IsOptional()
   actionType?: string;
@@ -13,12 +15,17 @@ export class AuditLogQueryDto {
   @IsOptional()
   resourceName?: string;
 
-  @ApiPropertyOptional({ description: 'Filter by user ID who performed the action' })
-  @IsNumber()
+  @ApiPropertyOptional({
+    description: 'Filter by user UUID who performed the action',
+  })
+  @IsString()
   @IsOptional()
-  @Min(1)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  performedBy?: number;
+  @Transform(
+    ({ value }) =>
+      value !== undefined && value !== null ? String(value) : value,
+    { toClassOnly: true },
+  )
+  performedBy?: string;
 
   @ApiPropertyOptional({ description: 'Start date for filtering (ISO 8601)' })
   @IsDateString()
@@ -35,7 +42,10 @@ export class AuditLogQueryDto {
   @IsOptional()
   search?: string;
 
-  @ApiPropertyOptional({ description: 'Field to sort by', default: 'timestamp' })
+  @ApiPropertyOptional({
+    description: 'Field to sort by',
+    default: 'timestamp',
+  })
   @IsString()
   @IsOptional()
   sortBy?: string;

@@ -86,14 +86,14 @@ export class IncidentController {
     this.logger.log(ctx, `${this.create.name} was called`);
 
     const incident = await this.createIncidentUseCase.execute(
-      ctx.user?.id.toString() || uuidv4(),
+      ctx.appUser?.uuid || uuidv4(),
       dto,
     );
     await this.auditLogService.create(
       'CREATE',
       'Incident',
       `Incident created: ${incident.getId()}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
     return { data: incident, meta: {} };
   }
@@ -136,7 +136,7 @@ export class IncidentController {
       'READ',
       'Incident',
       `Incident read: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
 
     return { data: incident, meta: {} };
@@ -222,7 +222,7 @@ export class IncidentController {
       'READ',
       'Incident',
       'Incidents list read',
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
     return { data: incidents, meta: {} };
   }
@@ -267,11 +267,12 @@ export class IncidentController {
       'UPDATE',
       'Incident',
       `Incident updated: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
     return { data: incident, meta: {} };
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
@@ -304,7 +305,7 @@ export class IncidentController {
       'DELETE',
       'Incident',
       `Incident deleted: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
   }
 
@@ -343,14 +344,14 @@ export class IncidentController {
   ): Promise<Incident> {
     const incident = await this.incidentService.resolve(
       id,
-      ctx.user?.id.toString() || uuidv4(),
+      ctx.appUser?.uuid || uuidv4(),
       dto.status,
     );
     await this.auditLogService.create(
       'UPDATE',
       'Incident',
       `Incident resolved to ${dto.status}: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
     return incident;
   }

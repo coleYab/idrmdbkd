@@ -66,7 +66,7 @@ export class UploadController {
       'CREATE',
       'Upload',
       `File uploaded: ${file.filename}`,
-      0,
+      null,
     );
     return result;
   }
@@ -109,7 +109,7 @@ export class UploadController {
       'CREATE',
       'Upload',
       `Image uploaded: ${storedFileName}`,
-      0,
+      null,
     );
     return result;
   }

@@ -79,7 +79,7 @@ export class DonationController {
       'CREATE',
       'DonationCampaign',
       `Donation campaign created: ${campaign.getCampaignID()}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
     return { data: CampaignResponse.fromDomain(campaign), meta: {} };
   }
@@ -110,7 +110,7 @@ export class DonationController {
       'READ',
       'DonationCampaign',
       'Campaigns list read',
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
 
     return {
@@ -145,7 +145,7 @@ export class DonationController {
       'READ',
       'DonationCampaign',
       `Campaign read: ${campaignId}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
 
     return { data: CampaignResponse.fromDomain(campaign), meta: {} };
@@ -176,7 +176,7 @@ export class DonationController {
       'UPDATE',
       'DonationCampaign',
       `Campaign ${campaignId} status changed to ${dto.status}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
 
     return { data: CampaignResponse.fromDomain(campaign), meta: {} };
@@ -213,7 +213,7 @@ export class DonationController {
       'CREATE',
       'Donation',
       `Donation initialized: ${data.donationId}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
 
     return { data, meta: {} };
@@ -247,7 +247,7 @@ export class DonationController {
       'UPDATE',
       'Donation',
       `Chapa webhook processed for tx_ref: ${payload.tx_ref}`,
-      0,
+      null,
     );
 
     return { data: { received: true }, meta: {} };
@@ -273,7 +273,7 @@ export class DonationController {
       'READ',
       'Donation',
       `Donation status read: ${donationId}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
     return { data, meta: {} };
   }
@@ -299,7 +299,7 @@ export class DonationController {
       'READ',
       'Donation',
       `Donation receipt downloaded: ${donationId}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid ?? null,
     );
 
     res.setHeader('Content-Type', 'application/pdf');

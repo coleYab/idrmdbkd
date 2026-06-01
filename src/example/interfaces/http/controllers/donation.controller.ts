@@ -64,7 +64,7 @@ export class DonationController {
     this.logger.log(ctx, `${this.create.name} was called`);
 
     const disaster = await this.createDonationUseCase.execute(
-      ctx.user?.id.toString() || uuidv4(), // Use user ID from context if available, otherwise generate a new UUID
+      ctx.appUser?.uuid ?? '', // Use user ID from context if available
       dto,
     );
     return { data: disaster, meta: {} };
