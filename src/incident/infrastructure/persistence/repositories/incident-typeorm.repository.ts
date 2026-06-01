@@ -66,7 +66,7 @@ export class IncidentTypeOrmRepository implements IncidentRepository {
 
   async findByFilters(filter: {
     statuses?: IncidentStatus[];
-    severities?: typeof Incident.prototype['severity'][];
+    severities?: (typeof Incident.prototype)['severity'][];
   }): Promise<Incident[]> {
     const where: any = {};
     if (filter.statuses && filter.statuses.length > 0) {

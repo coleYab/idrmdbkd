@@ -31,7 +31,10 @@ import {
 } from '../../../../shared/dtos/base-api-response.dto';
 import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
-import { IncidentStatus, IncidentSeverityLevel } from '../../../../shared/enums/incident.enums';
+import {
+  IncidentStatus,
+  IncidentSeverityLevel,
+} from '../../../../shared/enums/incident.enums';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
 import { ReportIncidentDto } from '../../../application/dto/create-incident.dto';
@@ -145,8 +148,16 @@ export class IncidentController {
     summary: 'Get incidents list API',
     description: 'Fetches all incidents.',
   })
-  @ApiQuery({ name: 'status', required: false, description: 'Filter incidents by comma-separated status values' })
-  @ApiQuery({ name: 'severity', required: false, description: 'Filter incidents by comma-separated severity values' })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Filter incidents by comma-separated status values',
+  })
+  @ApiQuery({
+    name: 'severity',
+    required: false,
+    description: 'Filter incidents by comma-separated severity values',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse([Incident]),
@@ -163,32 +174,49 @@ export class IncidentController {
     this.logger.log(ctx, `${this.findAll.name} was called`);
 
     const parsedStatuses = status
-      ? status.split(',').map((s) => s.trim()).filter(Boolean)
+      ? status
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
       : undefined;
     const parsedSeverities = severity
-      ? severity.split(',').map((s) => s.trim()).filter(Boolean)
+      ? severity
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
       : undefined;
 
     // Validate enum values
     if (parsedStatuses) {
-      const invalid = parsedStatuses.filter((s) => !Object.values(IncidentStatus).includes(s as any));
+      const invalid = parsedStatuses.filter(
+        (s) => !Object.values(IncidentStatus).includes(s as any),
+      );
       if (invalid.length) {
-        throw new BadRequestException(`Invalid status value(s): ${invalid.join(',')}`);
+        throw new BadRequestException(
+          `Invalid status value(s): ${invalid.join(',')}`,
+        );
       }
     }
     if (parsedSeverities) {
-      const invalid = parsedSeverities.filter((s) => !Object.values(IncidentSeverityLevel).includes(s as any));
+      const invalid = parsedSeverities.filter(
+        (s) => !Object.values(IncidentSeverityLevel).includes(s as any),
+      );
       if (invalid.length) {
-        throw new BadRequestException(`Invalid severity value(s): ${invalid.join(',')}`);
+        throw new BadRequestException(
+          `Invalid severity value(s): ${invalid.join(',')}`,
+        );
       }
     }
 
-    const incidents = parsedStatuses || parsedSeverities
-      ? await this.incidentService.findByFilters({
-          statuses: (parsedStatuses as unknown) as IncidentStatus[] | undefined,
-          severities: (parsedSeverities as unknown) as IncidentSeverityLevel[] | undefined,
-        })
-      : await this.incidentService.findAll();
+    const incidents =
+      parsedStatuses || parsedSeverities
+        ? await this.incidentService.findByFilters({
+            statuses: parsedStatuses as unknown as IncidentStatus[] | undefined,
+            severities: parsedSeverities as unknown as
+              | IncidentSeverityLevel[]
+              | undefined,
+          })
+        : await this.incidentService.findAll();
     await this.auditLogService.create(
       'READ',
       'Incident',

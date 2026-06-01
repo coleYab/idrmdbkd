@@ -12,14 +12,22 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 100 })
+  @Unique('uuid', ['uuid'])
+  @Column({ length: 36 })
+  uuid: string;
+
+  @Unique('clerkId', ['clerkId'])
+  @Column({ length: 255, nullable: true })
+  clerkId: string;
+
+  @Column({ length: 255 })
   name: string;
 
   @Column()
   password: string;
 
   @Unique('username', ['username'])
-  @Column({ length: 200 })
+  @Column({ length: 255 })
   username: string;
 
   @Column('simple-array')
@@ -29,7 +37,7 @@ export class User {
   isAccountDisabled: boolean;
 
   @Unique('email', ['email'])
-  @Column({ length: 200 })
+  @Column({ length: 255 })
   email: string;
 
   @CreateDateColumn({ name: 'createdAt', nullable: true })

@@ -1,5 +1,8 @@
 import { Incident } from '../entities/incident.entity';
-import { IncidentStatus, IncidentSeverityLevel } from '../../../shared/enums/incident.enums';
+import {
+  IncidentStatus,
+  IncidentSeverityLevel,
+} from '../../../shared/enums/incident.enums';
 
 export const INCIDENT_REPOSITORY = Symbol.for('IncidentRepository');
 export interface IncidentRepository {

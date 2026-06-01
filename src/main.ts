@@ -7,13 +7,19 @@ import { join } from 'path';
 
 import { AppModule } from './app.module';
 import { VALIDATION_PIPE_OPTIONS } from './shared/constants';
+import {
+  createAuthLoggerMiddleware,
+} from './shared/middlewares/auth-logger/auth-logger.middleware';
 import { RequestIdMiddleware } from './shared/middlewares/request-id/request-id.middleware';
+import { UserRepository } from './user/repositories/user.repository';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api/v1');
 
   app.useGlobalPipes(new ValidationPipe(VALIDATION_PIPE_OPTIONS));
+  const userRepository = app.get(UserRepository);
+  app.use(createAuthLoggerMiddleware(userRepository));
   app.use(RequestIdMiddleware);
   app.use('/uploads', expressStatic(join(process.cwd(), 'uploads')));
   app.enableCors();
