@@ -7,8 +7,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { ModuleTypeOrmEntity } from '../../../../module/infrastructure/persistence/typeorm/module-typeorm.entity';
 import { LocationTypeOrmEntity } from '../../../../location/infrastructure/persistence/typeorm/location-typeorm.entity';
+import { ModuleTypeOrmEntity } from '../../../../module/infrastructure/persistence/typeorm/module-typeorm.entity';
 import { User } from '../../../../user/entities/user.entity';
 
 @Entity('ert_units')

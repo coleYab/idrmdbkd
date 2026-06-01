@@ -6,13 +6,13 @@ import {
   ResourceNeedStatus,
 } from '../../domain/entities/resource-need.entity';
 import {
-  RESOURCE_NEED_REPOSITORY,
-  ResourceNeedRepository,
-} from '../../domain/repositories/resource-need.repository';
-import {
   INVENTORY_ITEMS_REPOSITORY,
   InventoryItemsRepository,
 } from '../../domain/repositories/inventory-items.repository';
+import {
+  RESOURCE_NEED_REPOSITORY,
+  ResourceNeedRepository,
+} from '../../domain/repositories/resource-need.repository';
 import { CreateResourceNeedDto } from '../dto/create-resource-need.dto';
 
 @Injectable()

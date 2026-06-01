@@ -8,9 +8,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { CampaignStatus } from '../../../domain/enums/campaign-status.enum';
 import { DisasterTypeOrmEntity } from '../../../../disaster/infrastructure/persistence/typeorm/disaster-typeorm.entity';
 import { User } from '../../../../user/entities/user.entity';
+import { CampaignStatus } from '../../../domain/enums/campaign-status.enum';
 import { DonationTypeOrmEntity } from './donation-typeorm.entity';
 
 @Entity('donation_campaigns')

@@ -7,12 +7,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { LocationTypeOrmEntity } from '../../../../location/infrastructure/persistence/typeorm/location-typeorm.entity';
 import {
   IncidentSeverityLevel,
   IncidentStatus,
   IncidentType,
 } from '../../../../shared/enums/incident.enums';
-import { LocationTypeOrmEntity } from '../../../../location/infrastructure/persistence/typeorm/location-typeorm.entity';
 import { User } from '../../../../user/entities/user.entity';
 
 @Entity('incidents')

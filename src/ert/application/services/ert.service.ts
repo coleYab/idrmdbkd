@@ -3,8 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { ErtUnit, ERTUnitStatus } from '../../domain/entities/ert-unit.entity';
 import {
-  ErtUnitRepository,
   ERT_UNIT_REPOSITORY,
+  ErtUnitRepository,
 } from '../../domain/repositories/ert-unit.repository';
 
 @Injectable()

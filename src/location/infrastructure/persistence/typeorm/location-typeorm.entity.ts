@@ -7,8 +7,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { IncidentTypeOrmEntity } from '../../../../incident/infrastructure/persistence/typeorm/incident-typeorm.entity';
 import { ErtUnitTypeOrmEntity } from '../../../../ert/infrastructure/persistence/typeorm/ert-unit-typeorm.entity';
+import { IncidentTypeOrmEntity } from '../../../../incident/infrastructure/persistence/typeorm/incident-typeorm.entity';
 
 @Entity('locations')
 export class LocationTypeOrmEntity {

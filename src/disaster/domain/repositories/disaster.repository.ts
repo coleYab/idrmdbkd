@@ -1,8 +1,8 @@
-import { Disaster } from '../entities/disaster.entity';
 import {
   DisasterSeverityLevel,
   DisasterStatus,
 } from '../../../shared/enums/disaster.enums';
+import { Disaster } from '../entities/disaster.entity';
 
 export const DISASTER_REPOSITORY = Symbol.for('DisasterRepository');
 export interface DisasterRepository {

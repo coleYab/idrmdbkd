@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 
 import { ErtUnit } from '../../../domain/entities/ert-unit.entity';
 import {
-  ErtUnitRepository,
   ERT_UNIT_REPOSITORY,
+  ErtUnitRepository,
 } from '../../../domain/repositories/ert-unit.repository';
 import { ErtUnitTypeOrmEntity } from '../typeorm/ert-unit-typeorm.entity';
 

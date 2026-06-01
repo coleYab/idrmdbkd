@@ -1,18 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
+import { User } from '../../../../user/entities/user.entity';
+import { UserRepository } from '../../../../user/repositories/user.repository';
 import {
   Notification,
-  NotificationType,
   NotificationStatus,
+  NotificationType,
 } from '../../../domain/entities/notification.entity';
 import {
   NOTIFICATION_REPOSITORY,
   NotificationRepository,
 } from '../../../domain/repositories/notification.repository';
 import { CreateNotificationBroadcastDto } from '../../dto/create-notification-broadcast.dto';
-import { User } from '../../../../user/entities/user.entity';
-import { UserRepository } from '../../../../user/repositories/user.repository';
 
 @Injectable()
 export class CreateNotificationCampaignUseCase {

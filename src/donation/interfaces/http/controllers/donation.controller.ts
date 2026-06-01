@@ -23,12 +23,12 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import {
   BaseApiErrorResponse,
   BaseApiResponse,
   SwaggerBaseApiResponse,
 } from '../../../../shared/dtos/base-api-response.dto';
-import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';

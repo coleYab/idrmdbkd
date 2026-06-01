@@ -1,11 +1,11 @@
+import { Type } from 'class-transformer';
 import {
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   Min,
-  IsNotEmpty,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 class LocationDto {
   @IsNumber()

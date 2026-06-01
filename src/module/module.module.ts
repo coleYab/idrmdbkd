@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { AuditLogModule } from '../audit-log/audit-log.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuditLogModule } from '../audit-log/audit-log.module';
 import { CreateModuleUseCase } from './application/use-cases/create-module/create-module.use-case';
 import { MODULE_REPOSITORY } from './domain/repositories/module.repository';
 import { ModuleTypeOrmRepository } from './infrastructure/persistence/repositories/module-typeorm.repository';

@@ -17,21 +17,21 @@ import {
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { v4 as uuidv4 } from 'uuid';
 
+import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import {
   BaseApiErrorResponse,
   BaseApiResponse,
   SwaggerBaseApiResponse,
 } from '../../../../shared/dtos/base-api-response.dto';
-import { AuditLogService } from '../../../../audit-log/services/audit-log.service';
 import { AppLogger } from '../../../../shared/logger/logger.service';
 import { ReqContext } from '../../../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../../../shared/request-context/request-context.dto';
 import { CreateResourceDto } from '../../../application/dto/create-resource.dto';
 import { UpdateResourceDto } from '../../../application/dto/update-resource.dto';
-import { ResourceService } from '../../../application/services/resource.service';
-import { Resource } from '../../../domain/entities/resource.entity';
 import { InventoryItemsService } from '../../../application/services/inventory-items.service';
+import { ResourceService } from '../../../application/services/resource.service';
 import { ResourceNeedService } from '../../../application/services/resource-need.service';
+import { Resource } from '../../../domain/entities/resource.entity';
 
 @ApiTags('resources')
 @Controller('resources')
