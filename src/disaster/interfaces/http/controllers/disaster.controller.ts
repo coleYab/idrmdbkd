@@ -80,14 +80,14 @@ export class DisasterController {
     this.logger.log(ctx, `${this.create.name} was called`);
 
     const disaster = await this.createDisasterUseCase.execute(
-      ctx.user?.id.toString() || uuidv4(),
+      ctx.appUser?.uuid || uuidv4(),
       dto,
     );
     await this.auditLogService.create(
       'CREATE',
       'Disaster',
       `Disaster created: ${disaster.getId()}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: disaster, meta: {} };
   }
@@ -121,7 +121,7 @@ export class DisasterController {
       'READ',
       'Disaster',
       `Disaster read: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
 
     return { data: disaster, meta: {} };
@@ -197,7 +197,7 @@ export class DisasterController {
       'READ',
       'Disaster',
       'Disasters list read',
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: disasters, meta: {} };
   }
@@ -233,7 +233,7 @@ export class DisasterController {
       'UPDATE',
       'Disaster',
       `Disaster updated: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: disaster, meta: {} };
   }
@@ -256,7 +256,7 @@ export class DisasterController {
     @Param('id') id: string,
     @ReqContext() ctx: RequestContext,
   ): Promise<BaseApiResponse<Disaster>> {
-    const userId = ctx.user?.id.toString() || uuidv4();
+    const userId = ctx.appUser?.uuid || uuidv4();
     const disaster = await this.createDisasterFromIncidentUseCase.execute(
       userId,
       id,
@@ -265,7 +265,7 @@ export class DisasterController {
       'CREATE',
       'Disaster',
       `Disaster created from incident ${id}: ${disaster.getId()}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: disaster, meta: {} };
   }
@@ -294,7 +294,7 @@ export class DisasterController {
       'DELETE',
       'Disaster',
       `Disaster deleted: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: undefined, meta: {} };
   }

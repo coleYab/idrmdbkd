@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Query,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -17,10 +16,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { ROLE } from '../../auth/constants/role.constant';
-import { Roles } from '../../auth/decorators/role.decorator';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../auth/guards/roles.guard';
 import {
   BaseApiErrorResponse,
   BaseApiResponse,
@@ -32,6 +27,7 @@ import { ReqContext } from '../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { UserOutput } from '../dtos/user-output.dto';
 import { UpdateUserInput } from '../dtos/user-update-input.dto';
+import { User } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
 
 @ApiTags('users')
@@ -44,7 +40,6 @@ export class UserController {
     this.logger.setContext(UserController.name);
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('me')
@@ -81,13 +76,11 @@ export class UserController {
     status: HttpStatus.UNAUTHORIZED,
     type: BaseApiErrorResponse,
   })
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(ROLE.ADMIN, ROLE.USER)
   @ApiBearerAuth()
   async getUsers(
     @ReqContext() ctx: RequestContext,
     @Query() query: PaginationParamsDto,
-  ): Promise<BaseApiResponse<UserOutput[]>> {
+  ): Promise<BaseApiResponse<User[]>> {
     this.logger.log(ctx, `${this.getUsers.name} was called`);
 
     const { users, count } = await this.userService.getUsers(
@@ -99,8 +92,6 @@ export class UserController {
     return { data: users, meta: { count } };
   }
 
-  // TODO: ADD RoleGuard
-  // NOTE : This can be made a admin only endpoint. For normal users they can use GET /me
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   @ApiOperation({
@@ -116,7 +107,7 @@ export class UserController {
   })
   async getUser(
     @ReqContext() ctx: RequestContext,
-    @Param('id') id: number,
+    @Param('id') id: string,
   ): Promise<BaseApiResponse<UserOutput>> {
     this.logger.log(ctx, `${this.getUser.name} was called`);
 

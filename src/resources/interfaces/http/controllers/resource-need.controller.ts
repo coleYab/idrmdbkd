@@ -66,7 +66,7 @@ export class ResourceNeedController {
       'CREATE',
       'ResourceNeed',
       `Resource need created: ${need.getNeedID()}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: need, meta: {} };
   }
@@ -166,7 +166,7 @@ export class ResourceNeedController {
       'UPDATE',
       'ResourceNeed',
       `Resource need status updated to ${dto.status}: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: need, meta: {} };
   }
@@ -195,7 +195,7 @@ export class ResourceNeedController {
       'UPDATE',
       'ResourceNeed',
       `Resource need approved: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: need, meta: {} };
   }
@@ -278,7 +278,7 @@ export class ResourceNeedController {
       'DELETE',
       'ResourceNeed',
       `Resource need deleted: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
   }
 }

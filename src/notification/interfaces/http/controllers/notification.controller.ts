@@ -70,14 +70,14 @@ export class NotificationController {
     this.logger.log(ctx, `${this.create.name} was called`);
 
     const notification = await this.createNotificationUseCase.execute(
-      ctx.user?.id.toString() || uuidv4(),
+      ctx.appUser?.uuid || uuidv4(),
       dto,
     );
     await this.auditLogService.create(
       'CREATE',
       'Notification',
       `Notification created: ${notification.getId()}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: notification, meta: {} };
   }
@@ -110,7 +110,7 @@ export class NotificationController {
       'CREATE',
       'Notification',
       `Notification broadcast: ${dto.title}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
 
     return { data: result, meta: {} };
@@ -140,7 +140,7 @@ export class NotificationController {
       'CREATE',
       'PushToken',
       `Push token saved for ${dto.clerkUserId || dto.email}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: token, meta: {} };
   }
@@ -209,7 +209,7 @@ export class NotificationController {
       'UPDATE',
       'Notification',
       `Notification updated: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: notification, meta: {} };
   }
@@ -232,7 +232,7 @@ export class NotificationController {
       'DELETE',
       'Notification',
       `Notification deleted: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
   }
 }

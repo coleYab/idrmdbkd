@@ -20,7 +20,7 @@ export class AuditLogOutput {
 
   @Expose()
   @ApiProperty()
-  performedBy: number;
+  performedBy: string | null;
 
   @Expose()
   @ApiProperty()

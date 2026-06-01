@@ -78,7 +78,7 @@ export class ResourceController {
       'CREATE',
       'Resource',
       `Resource created: ${dto.name}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: resource, meta: {} };
   }
@@ -192,7 +192,7 @@ export class ResourceController {
       'UPDATE',
       'Resource',
       `Resource updated: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
 
     return { data: resource, meta: {} };
@@ -226,7 +226,7 @@ export class ResourceController {
       'DELETE',
       'Resource',
       `Resource deleted: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
   }
 

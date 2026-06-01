@@ -55,7 +55,7 @@ export class ErtController {
       'CREATE',
       'ERTUnit',
       `ERT unit created: ${unit.getUnitID()}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: unit, meta: {} };
   }
@@ -75,24 +75,23 @@ export class ErtController {
       'READ',
       'ERTUnit',
       'ERT units list read',
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: units, meta: {} };
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
-  @Get(':id([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})')
-  async findOne(
-    @ReqContext() ctx: RequestContext,
-    @Param('id') id: string,
-  ) {
+  @Get(
+    ':id([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})',
+  )
+  async findOne(@ReqContext() ctx: RequestContext, @Param('id') id: string) {
     const unit = await this.service.findOne(id);
     if (!unit) throw new NotFoundException('ERT unit not found');
     await this.auditLogService.create(
       'READ',
       'ERTUnit',
       `ERT unit read: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: unit, meta: {} };
   }
@@ -114,7 +113,7 @@ export class ErtController {
       'UPDATE',
       'ERTUnit',
       `ERT unit location updated: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: unit, meta: {} };
   }
@@ -131,7 +130,7 @@ export class ErtController {
       'UPDATE',
       'ERTUnit',
       `ERT unit status updated to ${body.status}: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: unit, meta: {} };
   }
@@ -144,7 +143,7 @@ export class ErtController {
       'DELETE',
       'ERTUnit',
       `ERT unit deleted: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
   }
 }

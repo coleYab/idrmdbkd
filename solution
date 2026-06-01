@@ -1,0 +1,215 @@
+
+> nestjs-starter-rest-api@1.0.0 start:dev /home/nba/Programming/idrmdbkd
+> nest start --watch --preserveWatchOutput
+
+[[90m9:19:00 AM[0m] Starting compilation in watch mode...
+
+[96msrc/audit-log/dtos/audit-log-query.dto.ts[0m:[93m48[0m:[93m4[0m - [91merror[0m[90m TS2552: [0mCannot find name 'IsNumber'. Did you mean 'Number'?
+
+[7m48[0m   @IsNumber()
+[7m  [0m [91m   ~~~~~~~~[0m
+
+  [96mnode_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es5.d.ts[0m:[93m619[0m:[93m13[0m
+    [7m619[0m declare var Number: NumberConstructor;
+    [7m   [0m [96m            ~~~~~~[0m
+    'Number' is declared here.
+
+[96msrc/audit-log/dtos/audit-log-query.dto.ts[0m:[93m50[0m:[93m4[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Min'.
+
+[7m50[0m   @Min(1)
+[7m  [0m [91m   ~~~[0m
+
+[96msrc/audit-log/dtos/audit-log-query.dto.ts[0m:[93m55[0m:[93m4[0m - [91merror[0m[90m TS2552: [0mCannot find name 'IsNumber'. Did you mean 'Number'?
+
+[7m55[0m   @IsNumber()
+[7m  [0m [91m   ~~~~~~~~[0m
+
+  [96mnode_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es5.d.ts[0m:[93m619[0m:[93m13[0m
+    [7m619[0m declare var Number: NumberConstructor;
+    [7m   [0m [96m            ~~~~~~[0m
+    'Number' is declared here.
+
+[96msrc/audit-log/dtos/audit-log-query.dto.ts[0m:[93m57[0m:[93m4[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Min'.
+
+[7m57[0m   @Min(0)
+[7m  [0m [91m   ~~~[0m
+
+[96msrc/auth/services/auth.service.ts[0m:[93m74[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'number' is not assignable to parameter of type 'string'.
+
+[7m74[0m       registeredUser.id,
+[7m  [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/comment/interfaces/http/controllers/comment.controller.ts[0m:[93m82[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m82[0m       ctx.appUser?.uuid,
+[7m  [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/comment/interfaces/http/controllers/comment.controller.ts[0m:[93m89[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m89[0m       ctx.appUser?.uuid,
+[7m  [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/comment/interfaces/http/controllers/comment.controller.ts[0m:[93m121[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m121[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/comment/interfaces/http/controllers/comment.controller.ts[0m:[93m149[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m149[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/comment/interfaces/http/controllers/comment.controller.ts[0m:[93m185[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m185[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/comment/interfaces/http/controllers/comment.controller.ts[0m:[93m221[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m221[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/comment/interfaces/http/controllers/comment.controller.ts[0m:[93m247[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m247[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/donation/interfaces/http/controllers/donation.controller.ts[0m:[93m82[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m82[0m       ctx.appUser?.uuid,
+[7m  [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/donation/interfaces/http/controllers/donation.controller.ts[0m:[93m113[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m113[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/donation/interfaces/http/controllers/donation.controller.ts[0m:[93m148[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m148[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/donation/interfaces/http/controllers/donation.controller.ts[0m:[93m179[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m179[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/donation/interfaces/http/controllers/donation.controller.ts[0m:[93m216[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m216[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/donation/interfaces/http/controllers/donation.controller.ts[0m:[93m250[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'number' is not assignable to parameter of type 'string'.
+
+[7m250[0m       0,
+[7m   [0m [91m      ~[0m
+
+[96msrc/donation/interfaces/http/controllers/donation.controller.ts[0m:[93m276[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m276[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/donation/interfaces/http/controllers/donation.controller.ts[0m:[93m302[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m302[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/example/interfaces/http/controllers/donation.controller.ts[0m:[93m67[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m67[0m       ctx.appUser?.uuid, // Use user ID from context if available
+[7m  [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/incident/interfaces/http/controllers/incident.controller.ts[0m:[93m96[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m96[0m       ctx.appUser?.uuid,
+[7m  [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/incident/interfaces/http/controllers/incident.controller.ts[0m:[93m139[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m139[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/incident/interfaces/http/controllers/incident.controller.ts[0m:[93m225[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m225[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/incident/interfaces/http/controllers/incident.controller.ts[0m:[93m270[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m270[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/incident/interfaces/http/controllers/incident.controller.ts[0m:[93m307[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m307[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/incident/interfaces/http/controllers/incident.controller.ts[0m:[93m353[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m353[0m       ctx.appUser?.uuid,
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/module/interfaces/http/controllers/module.controller.ts[0m:[93m37[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'number' is not assignable to parameter of type 'string'.
+
+[7m37[0m       0,
+[7m  [0m [91m      ~[0m
+
+[96msrc/module/interfaces/http/controllers/module.controller.ts[0m:[93m52[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'number' is not assignable to parameter of type 'string'.
+
+[7m52[0m       0,
+[7m  [0m [91m      ~[0m
+
+[96msrc/module/interfaces/http/controllers/module.controller.ts[0m:[93m75[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'number' is not assignable to parameter of type 'string'.
+
+[7m75[0m       0,
+[7m  [0m [91m      ~[0m
+
+[96msrc/module/interfaces/http/controllers/module.controller.ts[0m:[93m87[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'number' is not assignable to parameter of type 'string'.
+
+[7m87[0m       0,
+[7m  [0m [91m      ~[0m
+
+[96msrc/upload/upload.controller.ts[0m:[93m69[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'number' is not assignable to parameter of type 'string'.
+
+[7m69[0m       0,
+[7m  [0m [91m      ~[0m
+
+[96msrc/upload/upload.controller.ts[0m:[93m112[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'number' is not assignable to parameter of type 'string'.
+
+[7m112[0m       0,
+[7m   [0m [91m      ~[0m
+
+[96msrc/user/services/user.service.ts[0m:[93m40[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'number' is not assignable to parameter of type 'string'.
+
+[7m40[0m       user.id,
+[7m  [0m [91m      ~~~~~~~[0m
+
+[96msrc/user/services/user.service.ts[0m:[93m152[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'number' is not assignable to parameter of type 'string'.
+
+[7m152[0m       userId,
+[7m   [0m [91m      ~~~~~~[0m
+
+[[90m9:19:02 AM[0m] Found 35 errors. Watching for file changes.
+
+ ELIFECYCLE  Command failed.

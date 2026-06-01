@@ -65,7 +65,7 @@ export class InventoryController {
       'CREATE',
       'InventoryItem',
       `Inventory item created: ${item.getItemID()}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: item, meta: {} };
   }
@@ -171,7 +171,7 @@ export class InventoryController {
       'UPDATE',
       'InventoryItem',
       `Inventory stock updated to ${dto.quantity}: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: updatedItem, meta: {} };
   }
@@ -252,7 +252,7 @@ export class InventoryController {
       'DELETE',
       'InventoryItem',
       `Inventory item deleted: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
   }
 }

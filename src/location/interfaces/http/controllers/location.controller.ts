@@ -66,14 +66,14 @@ export class LocationController {
     this.logger.log(ctx, `${this.create.name} was called`);
 
     const location = await this.createLocationUseCase.execute(
-      ctx.user?.id.toString() || uuidv4(),
+      ctx.appUser?.uuid || uuidv4(),
       dto,
     );
     await this.auditLogService.create(
       'CREATE',
       'Location',
       `Location created: ${location.getId()}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: location, meta: {} };
   }
@@ -106,7 +106,7 @@ export class LocationController {
       'READ',
       'Location',
       `Location read: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
 
     return { data: location, meta: {} };
@@ -130,7 +130,7 @@ export class LocationController {
       'READ',
       'Location',
       'Locations list read',
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: locations, meta: {} };
   }
@@ -155,7 +155,7 @@ export class LocationController {
       'UPDATE',
       'Location',
       `Location updated: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
     return { data: location, meta: {} };
   }
@@ -178,7 +178,7 @@ export class LocationController {
       'DELETE',
       'Location',
       `Location deleted: ${id}`,
-      ctx.user?.id || 0,
+      ctx.appUser?.uuid || null,
     );
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { Between,FindManyOptions, Like } from 'typeorm';
+import { Between, FindManyOptions, Like } from 'typeorm';
 
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
@@ -22,7 +22,7 @@ export class AuditLogService {
     actionType: string,
     resourceName: string,
     details: string,
-    performedBy: number,
+    performedBy: string | null,
   ): Promise<AuditLogOutput> {
     const log = this.repository.create({
       actionType,
@@ -59,7 +59,10 @@ export class AuditLogService {
     }
 
     if (query.dateFrom && query.dateTo) {
-      where.timestamp = Between(new Date(query.dateFrom), new Date(query.dateTo));
+      where.timestamp = Between(
+        new Date(query.dateFrom),
+        new Date(query.dateTo),
+      );
     } else if (query.dateFrom) {
       where.timestamp = Between(new Date(query.dateFrom), new Date());
     } else if (query.dateTo) {
@@ -70,8 +73,17 @@ export class AuditLogService {
       where.details = Like(`%${query.search}%`);
     }
 
-    const allowedSortFields = ['timestamp', 'actionType', 'resourceName', 'performedBy'] as const;
-    const sortBy = (allowedSortFields.includes(query.sortBy as any) ? query.sortBy : 'timestamp') as string;
+    const allowedSortFields = [
+      'timestamp',
+      'actionType',
+      'resourceName',
+      'performedBy',
+    ] as const;
+    const sortBy = (
+      allowedSortFields.includes(query.sortBy as any)
+        ? query.sortBy
+        : 'timestamp'
+    ) as string;
     const sortOrder = query.sortOrder === 'ASC' ? 'ASC' : 'DESC';
 
     const [logs, count] = await this.repository.findAndCount({
