@@ -9,6 +9,7 @@ export enum IncidentStatus {
   PENDING = 'Pending',
   VERIFIED = 'Verified',
   ACTIVE = 'Active',
+  RESOLVED = 'Resolved',
   REPEATED = 'Repeated',
   FALSE_ALARM = 'False Alarm',
   REJECTED = 'Rejected',

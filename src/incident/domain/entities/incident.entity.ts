@@ -81,28 +81,33 @@ export class Incident extends AggregateRoot {
     return this.reportedBy;
   }
 
-  public updateStatus(status: IncidentStatus): void {
-    this.status = status;
-    this.updatedAt = new Date();
-    this.apply(new IncidentUpdatedEvent(this));
-  }
+  private static readonly ALLOWED_TRANSITIONS: Record<IncidentStatus, IncidentStatus[]> = {
+    [IncidentStatus.PENDING]: [IncidentStatus.ACTIVE, IncidentStatus.REJECTED],
+    [IncidentStatus.ACTIVE]: [IncidentStatus.RESOLVED],
+    [IncidentStatus.RESOLVED]: [],
+    [IncidentStatus.REJECTED]: [],
+    [IncidentStatus.VERIFIED]: [],
+    [IncidentStatus.REPEATED]: [],
+    [IncidentStatus.FALSE_ALARM]: [],
+  };
 
-  public reject(rejectedBy: string, status: IncidentStatus): void {
-    this.resolvedBy = rejectedBy;
-    this.resolvedAt = new Date();
-    this.updatedAt = new Date();
-    this.updateStatus(status);
-  }
-
-  public approve(resolvedBy: string): void {
-    if (this.status !== IncidentStatus.ACTIVE) {
-      throw new Error('Only active incidents can be approved');
+  public transitionStatus(newStatus: IncidentStatus, userId?: string): void {
+    const allowed = Incident.ALLOWED_TRANSITIONS[this.status];
+    if (!allowed || !allowed.includes(newStatus)) {
+      throw new Error(
+        `Cannot transition incident from ${this.status} to ${newStatus}`,
+      );
     }
 
-    this.resolvedBy = resolvedBy;
-    this.resolvedAt = new Date();
+    this.status = newStatus;
     this.updatedAt = new Date();
-    this.updateStatus(IncidentStatus.VERIFIED);
+
+    if (userId && (newStatus === IncidentStatus.RESOLVED || newStatus === IncidentStatus.REJECTED)) {
+      this.resolvedBy = userId;
+      this.resolvedAt = new Date();
+    }
+
+    this.apply(new IncidentUpdatedEvent(this));
   }
 
   public getSeverity(): IncidentSeverityLevel {

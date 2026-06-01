@@ -39,34 +39,7 @@ export class IncidentService {
       throw new Error('Incident not found');
     }
 
-    if (status === IncidentStatus.ACTIVE) {
-      return this.approve(id, userId);
-    }
-
-    if (status === IncidentStatus.PENDING) {
-      throw new Error(
-        'Incident status must be rejection status if it is not a verification status',
-      );
-    }
-
-    incident.reject(userId, status);
-    await this.incidentRepository.save(incident);
-
-    return incident;
-  }
-
-  public async approve(id: string, userId: string): Promise<Incident> {
-    const incident = await this.incidentRepository.findById(id);
-    if (!incident) {
-      throw new Error('Incident not found');
-    }
-
-    if (incident.getStatus() !== IncidentStatus.ACTIVE) {
-      throw new Error('Only active incidents can be verified');
-    }
-
-    incident.approve(userId);
-
+    incident.transitionStatus(status, userId);
     await this.incidentRepository.save(incident);
 
     return incident;

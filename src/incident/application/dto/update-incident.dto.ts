@@ -29,7 +29,7 @@ export class UpdateIncidentStatus {
   @ApiProperty({
     description: 'New status to apply to the incident',
     enum: IncidentStatus,
-    example: IncidentStatus.VERIFIED,
+    example: IncidentStatus.RESOLVED,
   })
   @IsNotEmpty()
   @IsEnum(IncidentStatus)
