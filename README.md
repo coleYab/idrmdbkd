@@ -1,50 +1,55 @@
-## NestJS Starter Kit [v2]
+# IDRMC — Integrated Disaster Response Management System
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![build](https://github.com/monstar-lab-oss/nestjs-starter-rest-api/actions/workflows/build-workflow.yml/badge.svg?branch=master&event=push)](https://github.com/monstar-lab-oss/nestjs-starter-rest-api/actions/workflows/build-workflow.yml)
-[![tests](https://github.com/monstar-lab-oss/nestjs-starter-rest-api/actions/workflows/tests-workflow.yml/badge.svg?branch=master&event=push)](https://github.com/monstar-lab-oss/nestjs-starter-rest-api/actions/workflows/tests-workflow.yml)
 
-This starter kit has the following outline:
+A backend platform for managing the full lifecycle of disaster response operations. Emergency personnel can report incidents, declare disasters, track response teams on a map, manage resource inventory and allocation, process donations and crowdfunding, and communicate via push notifications and email.
 
-- Monolithic Project
-- REST API
+Built with [NestJS](https://nestjs.com/), powered by **PostgreSQL + PostGIS** for spatial data, and integrated with Ethiopian payment gateways (Chapa, Telebirr).
 
-This is a Github Template Repository, so it can be easily [used as a starter template](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) for other repositories.
+## Modules
 
-## Sample implementations
+| Module | Description |
+|--------|-------------|
+| **Incident** | Emergency reports (flood, drought, landslide, fire, conflict, locust) with severity, location, affected population, infrastructure damage, and attachments |
+| **Disaster** | Formal disaster declarations linked to verified incidents, with budget allocation, economic loss estimates, and lifecycle state management |
+| **ERT** | Emergency Response Team tracking — register units, monitor deployment status (idle/deployed/maintenance), and find nearby teams via PostGIS spatial queries |
+| **Resources** | Resource catalog, geographically-tracked inventory stockpiles, incident-linked needs with priority/status, and GIS-based allocation routing |
+| **Donation** | Crowdfunding campaigns tied to disasters, payment processing via Chapa (Bank Transfer, Telebirr), idempotent transactions, and PDF receipt generation |
+| **Notification** | In-app notifications, Expo push notifications, and Resend transactional email broadcasts |
+| **Comment** | User comments and updates on disasters with file attachments |
+| **Auth / User** | JWT-based authentication, RBAC (USER/ADMIN roles), Clerk integration, and profile management |
+| **Audit Log** | Immutable audit trail for all CRUD operations across the system |
+| **Location** | Generic geographic location records |
+| **Upload** | Static file serving for attachments and images |
 
-To view sample implementations based on this starter kit, please visit the [nestjs-sample-solutions](https://github.com/monstar-lab-oss/nestjs-sample-solutions) repository.
+## Tech Stack
 
-## Starter kit Features
+- **Runtime:** Node.js, TypeScript 5
+- **Framework:** NestJS 10 (monolithic REST API)
+- **Database:** PostgreSQL 16 + PostGIS 3.4
+- **ORM:** TypeORM 0.3 with migrations
+- **Auth:** JWT (RS256), Passport.js, Clerk
+- **Payments:** Chapa (Bank Transfer, Telebirr)
+- **Notifications:** Expo Server SDK (APNs/FCM), Resend (email)
+- **PDF:** PDFKit (donation receipts)
+- **API Docs:** Swagger / OpenAPI
+- **Validation:** class-validator, class-transformer
+- **Logging:** Winston
+- **Testing:** Jest, Supertest (E2E)
+- **CI:** SonarCloud, GitHub Actions
+- **Containerization:** Docker, Docker Compose
 
-One of our main principals has been to keep the starter kit as lightweight as possible. With that in mind, here are some of the features that we have added in this starter kit.
+## Architecture
 
-| Feature                  | Info               | Progress |
-|--------------------------|--------------------|----------|
-| Authentication           | JWT                | Done     |
-| Authorization            | RBAC (Role based)  | Done     |
-| ORM Integration          | TypeORM            | Done     |
-| DB Migrations            | TypeORM            | Done     |
-| Logging                  | winston            | Done     |
-| Request Validation       | class-validator    | Done     |
-| Pagination               | SQL offset & limit | Done     |
-| Docker Ready             | Dockerfile         | Done     |
-| Devcontainer             | -                  | Done     |
-| Auto-generated OpenAPI   | -                  | Done     |
-| Auto-generated ChangeLog | -                  | WIP      |
-
-Apart from these features above, our start-kit comes loaded with a bunch of minor awesomeness like prettier integration, commit-linting husky hooks, package import sorting, SonarCloud github actions, docker-compose for database dependencies, etc. :D
-
-## Consulting
-
-Most of the features added to this starter kit have already been tried out in production applications by us here at MonstarLab. Our production applications are more feature rich, and we constantly strive to bring those features to this OSS starter kit.
-
-If you would like to use a more feature rich starter kit, with more awesome features from Day 1, then please reach out to us and we can collaborate on it together as technology partners. :)
+- Domain-driven structure: each module follows `domain/`, `application/`, `infrastructure/`, `interfaces/` layers
+- API prefix: `/api/v1/`
+- CQRS-style domain events (IncidentCreated, DonationCompleted, CampaignGoalMet, etc.)
+- Spatial queries via PostGIS `geometry(Point, 4326)` with `ST_DWithin` and `ST_Distance`
+- [Detailed project structure](./docs/project-structure.md)
 
 ## Installation
 
-Note: when using docker, all the `npm` commands can also be performed using `./scripts/npm` (for example `./scripts/npm install`).
-This script allows you to run the same commands inside the same environment and versions than the service, without relying on what is installed on the host.
+Note: when using Docker, all `npm` commands can also be run via `./scripts/npm` (e.g. `./scripts/npm install`) to use the same environment and versions as the service, regardless of what is installed on the host.
 
 ```bash
 $ npm install
@@ -129,7 +134,7 @@ $ docker run -p 3000:3000 --volume 'pwd':/usr/src/app --network --env-file .env 
 $ docker compose up
 ```
 
-Learn more about Docker conventions [here](https://github.com/monstar-lab-group/nodejs-backend/blob/master/architecture/docker-ready.md). (WIP - Currently this is an internal org link.)
+The Docker Compose setup includes a PostGIS container so the database is automatically provisioned.
 
 ## Test
 
@@ -148,33 +153,14 @@ $ npm run test:cov
 
 ```bash
 # using docker
-$ docker compose exec app npm run migration:run
+docker compose exec app npm run migration:run
 
-# generate migration (replace CreateUsers with name of the migration)
-$ npm run migration:generate --name=CreateUsers
+# generate migration (replace CreateUsers with the migration name)
+npm run migration:generate --name=CreateUsers
 
 # run migration
-$ npm run migration:run
+npm run migration:run
 
 # revert migration
-$ npm run migration:revert
+npm run migration:revert
 ```
-
-## Architecture
-
-- [Project Structure](./docs/project-structure.md)
-
-## Contributors
-
-- [Yash Murty](https://github.com/yashmurty)
-- [S M Asad Rahman](https://github.com/asad-mlbd)
-- [Tanveer Hassan](https://github.com/war1oc)
-- [Saad Bin Amjad](https://github.com/Saad-Amjad)
-- [Sivan Payyadakath](https://github.com/sivanpayyadakath)
-- [Sébastien Caparros](https://github.com/Seb-C)
-
-## External Links
-
-<a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo.svg" width="150" alt="Nest Logo" /></a>
-
-[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=monstar-lab-oss_nestjs-starter-rest-api)
